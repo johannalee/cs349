@@ -19,7 +19,7 @@ namespace cs349 {
     sec = 0;
     min = 0;
     elapsed = 0;
-    LOG(INFO) << "To exit the program, press esc key";
+    // LOG(INFO) << "To exit the program, press esc key";
   }
 
   StopWatch::~StopWatch() {
@@ -99,7 +99,6 @@ namespace cs349 {
     // |______________________________|
 
 // TODO CS349
-    Point p = e.GetWhere();
     switch(this->CheckBtnBoundary(e.GetWhere())){
       case 0:
       break;

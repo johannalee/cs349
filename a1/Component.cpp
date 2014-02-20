@@ -147,10 +147,16 @@ namespace cs349
      * - You shouldn't be able to interact with things you can't see
      * - Points are expected to be in the coordinate system of the
      *   Component (see notes in the header file)
+    LOG_TODO << "TODO CS349: Implement Component::HandleMouseEvent (remove when implemented)";
      */
 
-    LOG_TODO << "TODO CS349: Implement Component::HandleMouseEvent (remove when implemented)";
 // TODO CS349
+    for( vector<Component*>::iterator iter=this->children.begin(); iter!=this->children.end(); ++iter){
+      Component*c = (*iter);
+      if(c->HandleMouseEvent(e)){
+        return true;
+      }
+    }
     return false;
   }
 
@@ -182,6 +188,26 @@ namespace cs349
 
     LOG_TODO << "TODO CS349: Implement Component::Paint (remove when implemented)";
 // TODO CS349
+
+//check if component is visible
+    if(this->IsVisible()){
+      //Save state of graphics context
+      Graphics* old_g = g;
+
+      g->SetForegroundColor(0x000000);
+      g->FillRect(this->GetBounds());
+
+      g->SetForegroundColor(0xFFFFFF);
+      g->SetBackgroundColor(0x000000);
+
+      this->PaintComponent(old_g);      
+
+      for(vector<Component*>::iterator iter=this->children.begin(); iter!=this->children.end(); ++iter){
+        Component*c = (*iter);
+        c->Paint(g);
+      }
+      g = old_g;
+    }
   }
 
   void Component::Repaint()

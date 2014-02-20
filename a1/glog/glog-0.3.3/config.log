@@ -946,7 +946,7 @@ configure:15767: $? = 0
 configure:15767: result: yes
 configure:15774: checking for dladdr
 configure:15774: g++ -o conftest -g -O2   conftest.cpp  >&5
-/tmp/ccerEy6j.o: In function `main':
+/tmp/ccbTm1sU.o: In function `main':
 /media/sf_cs349/a1/glog/glog-0.3.3/conftest.cpp:69: undefined reference to `dladdr'
 collect2: error: ld returned 1 exit status
 configure:15774: $? = 1
@@ -1166,7 +1166,7 @@ conftest.c:45:22: warning: null argument where non-null required (argument 1) [-
                       pthread_create(0,0,0,0); pthread_cleanup_pop(0);
                       ^
 conftest.c:45:22: warning: null argument where non-null required (argument 3) [-Wnonnull]
-/tmp/cch4gslK.o: In function `main':
+/tmp/ccbvVgEi.o: In function `main':
 /media/sf_cs349/a1/glog/glog-0.3.3/conftest.c:43: undefined reference to `pthread_join'
 /media/sf_cs349/a1/glog/glog-0.3.3/conftest.c:44: undefined reference to `__pthread_register_cancel'
 /media/sf_cs349/a1/glog/glog-0.3.3/conftest.c:45: undefined reference to `pthread_create'

@@ -8,7 +8,7 @@
 #include "XWindow.h"
 #include "SchemeInterpreter.h"
 #include "Logging.h"
-#include <cstdlib>
+#include <cstdlib>  //for exit(0)
 
 
 namespace cs349
@@ -210,7 +210,7 @@ namespace cs349
       this->GetEventQueue()->ProcessNextEvent();
       XFlush(this->display);
       if(!XPending(this->display)){
-        sleep(1/1000);
+        usleep(1000);
       }
     }
   }
