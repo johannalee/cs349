@@ -49,19 +49,18 @@ public class Fruit implements FruitInterface {
     /**
      * add a point to end of shape
      */
+    // public void addPoint(double x, double y) {
+    //     if(points == null){
+    //         points = new ArrayList<Point2D>();
+    //     }
+    //     points.add(new Point2D.Double(x,y));
+    //     hasChanged = true;
+    // }
     public void addPoint(int[] x, int[] y) {
         x_pts = x;
         y_pts = y;
         hasChanged = true;
     }
-    /**
-     * add a point to end of shape
-     */
-    // public void addPoint(int x, int y) {
-    //     x_pts.add(x);
-    //     y_pts.add(y);
-    //     hasChanged = true;
-    // }
     /**
      * The color used to paint the interior of the Fruit.
      */
@@ -143,12 +142,14 @@ public class Fruit implements FruitInterface {
      */
     public void draw(Graphics2D g2) {
         // TODO BEGIN CS349
-        g2.setColor(Color.DARK_GRAY);
-        // g2.setStroke(new BasicStroke(10, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g2.drawPolyline(x_pts, y_pts, x_pts.length);
-        hasChanged = false;
-        g2.setColor(this.getFillColor());
-        g2.fill(this.fruitShape);
+        if(hasChanged){
+            g2.setColor(Color.DARK_GRAY);
+            g2.setStroke(new BasicStroke(10, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2.drawPolyline(x_pts, y_pts, x_pts.length);
+            hasChanged = false;
+            g2.setColor(this.getFillColor());
+            g2.fill(this.fruitShape);
+        }
         // TODO END CS349
     }
 

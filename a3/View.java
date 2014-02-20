@@ -87,15 +87,14 @@ public class View extends JPanel implements ModelListener {
 
             // you could do something like this to draw a line for testing
             // not a perfect implementation, but works for 99% of the angles drawn
-            
-            int[] x = { (int) drag.getStart().getX(), (int) drag.getEnd().getX(), (int) drag.getEnd().getX(), (int) drag.getStart().getX()};
-            int[] y = { (int) drag.getStart().getY()-1, (int) drag.getEnd().getY()-1, (int) drag.getEnd().getY()+1, (int) drag.getStart().getY()+1};
+
+            int[] x = { (int) drag.getStart().getX(), (int) drag.getEnd().getX() };//, (int) drag.getEnd().getX(), (int) drag.getStart().getX()};
+            int[] y = { (int) drag.getStart().getY(), (int) drag.getEnd().getY() }; //, (int) drag.getEnd().getY()+1, (int) drag.getStart().getY()+1};
             model.add(new Fruit(new Area(new Polygon(x, y, x.length))));
             // find intersected shapes
             int offset = 0; // Used to offset new fruits
             for (Fruit s : model.getShapes()) {
-                s.addPoint(x, y);
-                // s.addPoint(e.getX(), e.getY());
+                if(x[0] != x[1] )   s.addPoint(x, y);
                 if (s.intersects(drag.getStart(), drag.getEnd())) {
                     s.setFillColor(Color.RED);
                     try {
