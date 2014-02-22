@@ -6,8 +6,8 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.util.ArrayList;
 
 /*
  * View of the main play area.
@@ -16,6 +16,7 @@ import java.awt.event.MouseEvent;
 public class View extends JPanel implements ModelListener {
     private Model model;
     private final MouseDrag drag;
+    private ArrayList<Point2D> points;
 
     // Constructor
     View (Model m) {
@@ -27,13 +28,13 @@ public class View extends JPanel implements ModelListener {
         // add a couple of fruit instances for test purposes
         // in a real game, you want to spawn fruit in random locations from the bottom of the screen
         // we use ellipse2D for simple shapes, you might consider something more complex
-        Fruit f = new Fruit(new Area(new Ellipse2D.Double(0, 50, 50, 50)));
-        f.translate(100, 100);
-        f.setFillColor(Color.BLUE);
+        Fruit f = new Fruit(new Area(new Ellipse2D.Double(0, 150, 150, 150)));
+        // f.translate(100, 100);
+        f.setFillColor(Color.RED);
         model.add(f);
 
         Fruit f2 = new Fruit(new Area(new Rectangle2D.Double(0, 50, 50, 50)));
-        f2.translate(300, 300);
+        // f2.translate(300, 300);
         f.setFillColor(Color.BLUE);
         model.add(f2);
 
@@ -81,6 +82,16 @@ public class View extends JPanel implements ModelListener {
         }
 
         @Override
+        public void mouseDragged(MouseEvent e) {
+            super.mouseDragged(e);
+            drag.drag(e.getPoint());
+            if(points == null){
+                points = new ArrayList<Point2D>();
+            }
+            points.add(drag.getDrag());
+        }
+
+        @Override
         public void mouseReleased(MouseEvent e) {
             super.mouseReleased(e);
             drag.stop(e.getPoint());
@@ -91,10 +102,11 @@ public class View extends JPanel implements ModelListener {
             int[] x = { (int) drag.getStart().getX(), (int) drag.getEnd().getX() };//, (int) drag.getEnd().getX(), (int) drag.getStart().getX()};
             int[] y = { (int) drag.getStart().getY(), (int) drag.getEnd().getY() }; //, (int) drag.getEnd().getY()+1, (int) drag.getStart().getY()+1};
             model.add(new Fruit(new Area(new Polygon(x, y, x.length))));
+            
             // find intersected shapes
             int offset = 0; // Used to offset new fruits
             for (Fruit s : model.getShapes()) {
-                if(x[0] != x[1] )   s.addPoint(x, y);
+                if(x != null && y != null )   s.addPoint(x, y);
                 if (s.intersects(drag.getStart(), drag.getEnd())) {
                     s.setFillColor(Color.RED);
                     try {
@@ -124,14 +136,17 @@ public class View extends JPanel implements ModelListener {
     private class MouseDrag {
         private Point2D start;
         private Point2D end;
+        private Point2D drag;
 
         MouseDrag() { }
 
         protected void start(Point2D start) { this.start = start; }
         protected void stop(Point2D end) { this.end = end; }
+        protected void drag(Point2D drag) { this.drag = drag; }
 
         protected Point2D getStart() { return start; }
         protected Point2D getEnd() { return end; }
+        protected Point2D getDrag() { return drag; }
 
     }
 }

@@ -59,6 +59,13 @@ public class Fruit implements FruitInterface {
     public void addPoint(int[] x, int[] y) {
         x_pts = x;
         y_pts = y;
+        if(points == null){
+            points = new ArrayList<Point2D>();
+        }
+        for(int i = 0; i < x_pts.length; ++i){
+            Point2D pt = new Point2D.Double(x_pts[i], y_pts[i]);
+            if(pt != null)  points.add(pt);
+        }
         hasChanged = true;
     }
     /**
@@ -143,8 +150,15 @@ public class Fruit implements FruitInterface {
     public void draw(Graphics2D g2) {
         // TODO BEGIN CS349
         if(hasChanged){
-            g2.setColor(Color.DARK_GRAY);
             g2.setStroke(new BasicStroke(10, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        if(y_pts != null){
+            int i = y_pts.length-1;
+            if(points != null && this.intersects(points.get(0), points.get(i))){
+                System.out.println("&&&&&&&");
+            }else if(points == null){
+                System.out.println("POINTS SUCK");
+            }
+        }
             g2.drawPolyline(x_pts, y_pts, x_pts.length);
             hasChanged = false;
             g2.setColor(this.getFillColor());
@@ -159,6 +173,9 @@ public class Fruit implements FruitInterface {
      */
     public boolean intersects(Point2D p1, Point2D p2) {
         // TODO BEGIN CS349
+        if(this.contains(p1) && this.contains(p2)){
+            return true;
+        }
         // TODO END CS349
         return false;
     }
