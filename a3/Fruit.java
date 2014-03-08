@@ -5,22 +5,18 @@
  */
 import java.awt.*;
 import java.awt.geom.*;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
+import java.awt.geom.Line2D.Double;
+import java.lang.Math;
 
 /**
  * Class that represents a Fruit. Can be split into two separate fruits.
  */
 public class Fruit implements FruitInterface {
     private Area            fruitShape   = null;
-    private Color           fillColor    = Color.RED;
+    private Color           fillColor    = Color.GREEN;
     private Color           outlineColor = Color.BLACK;
     private AffineTransform transform    = new AffineTransform();
     private double          outlineWidth = 5;
-    //for drawing lines created by user drag
-    private ArrayList<Point2D> points;
-    private boolean hasChanged = false;
-    private int[] x_pts, y_pts;
 
     /**
      * A fruit is represented using any arbitrary geometric shape.
@@ -28,46 +24,7 @@ public class Fruit implements FruitInterface {
     Fruit (Area fruitShape) {
         this.fruitShape = (Area)fruitShape.clone();
     }
-    /**
-     * get all the x points
-     */
-    public int[] getXpoints() {
-        return this.x_pts;
-    } 
-    /**
-     * get all the y points
-     */
-    public int[] getYpoints() {
-        return this.y_pts;
-    } 
-    /**
-     * get all the points
-     */
-    public int getPointsSize() {
-        return this.points.size();
-    } 
-    /**
-     * add a point to end of shape
-     */
-    // public void addPoint(double x, double y) {
-    //     if(points == null){
-    //         points = new ArrayList<Point2D>();
-    //     }
-    //     points.add(new Point2D.Double(x,y));
-    //     hasChanged = true;
-    // }
-    public void addPoint(int[] x, int[] y) {
-        x_pts = x;
-        y_pts = y;
-        if(points == null){
-            points = new ArrayList<Point2D>();
-        }
-        for(int i = 0; i < x_pts.length; ++i){
-            Point2D pt = new Point2D.Double(x_pts[i], y_pts[i]);
-            if(pt != null)  points.add(pt);
-        }
-        hasChanged = true;
-    }
+
     /**
      * The color used to paint the interior of the Fruit.
      */
@@ -149,22 +106,12 @@ public class Fruit implements FruitInterface {
      */
     public void draw(Graphics2D g2) {
         // TODO BEGIN CS349
-        if(hasChanged){
-            g2.setStroke(new BasicStroke(10, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        if(y_pts != null){
-            int i = y_pts.length-1;
-            if(points != null && this.intersects(points.get(0), points.get(i))){
-                System.out.println("&&&&&&&");
-            }else if(points == null){
-                System.out.println("POINTS SUCK");
-            }
-        }
-            g2.drawPolyline(x_pts, y_pts, x_pts.length);
-            hasChanged = false;
-            g2.setColor(this.getFillColor());
-            g2.fill(this.fruitShape);
-        }
         // TODO END CS349
+        Graphics2D tg = g2;
+        tg.setPaint(outlineColor);
+        tg.draw(this.getTransformedShape());
+        tg.setPaint(fillColor);
+        tg.fill(this.getTransformedShape());
     }
 
     /**
@@ -173,13 +120,29 @@ public class Fruit implements FruitInterface {
      */
     public boolean intersects(Point2D p1, Point2D p2) {
         // TODO BEGIN CS349
-        if(this.contains(p1) && this.contains(p2)){
-            return true;
-        }
         // TODO END CS349
+        int[] x = { (int) p1.getX(), (int) p2.getX(), (int) p2.getX(), (int) p1.getX()};
+        int[] y = { (int) p1.getY()-1, (int) p2.getY()-1, (int) p2.getY()+1, (int) p1.getY()+1};
+        Polygon pLine = new Polygon(x, y, x.length);
+        
+        AffineTransform at = new AffineTransform();
+        at.rotate(-getThetaWrtXaxis(p1,p2), p1.getX(), p1.getY());
+        
+        boolean intersect = this.getTransformedShape().createTransformedArea(at).intersects(new Area(pLine).createTransformedArea(at).getBounds2D());
+        if(intersect) {
+            return true;
+        } 
+        
         return false;
     }
 
+    public double getThetaWrtXaxis(Point2D p1, Point2D p2){
+        double angle1 = Math.atan2((p1.getY() - p2.getY()), (p1.getX() - p2.getX()));
+        double angle2 = Math.atan2(0, -1);
+
+        return angle1 - angle2;
+    }
+    
     /**
      * Returns whether the given point is within the Fruit's shape.
      */
@@ -199,10 +162,46 @@ public class Fruit implements FruitInterface {
 
         // TODO BEGIN CS349
         // Rotate shape to align slice with x-axis
+        int[] x = { (int) p1.getX(), (int) p2.getX(), (int) p2.getX(), (int) p1.getX()};
+        int[] y = { (int) p1.getY()-1, (int) p2.getY()-1, (int) p2.getY()+1, (int) p1.getY()+1};
+        Polygon pLine = new Polygon(x, y, x.length);
+        
+        AffineTransform at = new AffineTransform();
+        at.rotate(-getThetaWrtXaxis(p1,p2), p1.getX(), p1.getY());
+
+        Area rotatedPolyLine = new Area(new Polygon(x, y, x.length)).createTransformedArea(at);
+        Rectangle rotatedPolyLineBounds = rotatedPolyLine.getBounds();
+
+        // System.out.println(getThetaWrtXaxis(p1,p2));
+        Area rotatedFruit = this.getTransformedShape().createTransformedArea(at);
+
+        double dx = p2.getX() - p1.getX();
+        double dy = p2.getY() - p1.getY();
+        double length = Math.hypot(dx, dy);
+
+        Rectangle rotatedFruitBounds = rotatedFruit.getBounds();
+        int bottomRecLeftBottomY = (int)(rotatedFruitBounds.getY() + rotatedFruitBounds.getHeight());
+        int bottomRecHeight = bottomRecLeftBottomY - (int)(rotatedPolyLineBounds.getY());
+        int topRecHeight = (int)(rotatedPolyLineBounds.getY() - rotatedFruitBounds.getY()) - 2;
+
+        Rectangle bottomRec = new Rectangle((int)rotatedFruitBounds.getX(), (int)rotatedPolyLineBounds.getY()-3, (int)rotatedFruitBounds.width, bottomRecHeight+1);
+        Rectangle topRec = new Rectangle((int)rotatedFruitBounds.getX(), (int)rotatedFruitBounds.getY(), (int)rotatedFruitBounds.width, topRecHeight);
+        at.rotate(getThetaWrtXaxis(p1,p2), p1.getX(), p1.getY());
+        dx = (int)(this.getTransformedShape().getBounds().getX() - rotatedFruitBounds.getX());
+        dy = (int)(this.getTransformedShape().getBounds().getY() - rotatedFruitBounds.getY());
+        bottomArea = rotatedFruit.createTransformedArea(at);
+        bottomArea.intersect(new Area(bottomRec));
+        topArea = rotatedFruit.createTransformedArea(at);
+        topArea.intersect(new Area(topRec));
+        at.translate(dx/2, dy/2);
+        topArea = topArea.createTransformedArea(at);
+        bottomArea = bottomArea.createTransformedArea(at);
+        at.rotate(getThetaWrtXaxis(p1,p2)/1.667, p1.getX(), p1.getY());
+
         // Bisect shape above/below x-axis (look at intersection methods!)
         // TODO END CS349
         if (topArea != null && bottomArea != null)
-            return new Fruit[] { new Fruit(topArea), new Fruit(bottomArea) };
+            return new Fruit[] { new Fruit(topArea.createTransformedArea(at)), new Fruit(bottomArea.createTransformedArea(at)) };
         return new Fruit[0];
      }
 }

@@ -6,8 +6,9 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.*;
-import java.awt.event.*;
-import java.util.ArrayList;
+import java.awt.geom.Line2D.Double;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /*
  * View of the main play area.
@@ -16,7 +17,6 @@ import java.util.ArrayList;
 public class View extends JPanel implements ModelListener {
     private Model model;
     private final MouseDrag drag;
-    private ArrayList<Point2D> points;
 
     // Constructor
     View (Model m) {
@@ -28,14 +28,12 @@ public class View extends JPanel implements ModelListener {
         // add a couple of fruit instances for test purposes
         // in a real game, you want to spawn fruit in random locations from the bottom of the screen
         // we use ellipse2D for simple shapes, you might consider something more complex
-        Fruit f = new Fruit(new Area(new Ellipse2D.Double(0, 150, 150, 150)));
-        // f.translate(100, 100);
-        f.setFillColor(Color.RED);
+        Fruit f = new Fruit(new Area(new Ellipse2D.Double(0, 50, 50, 50)));
+        f.translate(100, 100);
         model.add(f);
 
         Fruit f2 = new Fruit(new Area(new Rectangle2D.Double(0, 50, 50, 50)));
-        // f2.translate(300, 300);
-        f.setFillColor(Color.BLUE);
+        f2.translate(200, 200);
         model.add(f2);
 
         // drag represents the last drag performed, which we will need to calculate the angle of the slice
@@ -65,11 +63,25 @@ public class View extends JPanel implements ModelListener {
         // draw all pieces of fruit
         // note that fruit is responsible for figuring out where and how to draw itself
         for (Fruit s : model.getShapes()) {
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             s.draw(g2);
         }
     }
 
+//    public double getTheta(Point2D p1, Point2D p2) {
+//      double theta = (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
+//      if ((p2.getX() - p1.getX()) >= 0) return -theta;
+//      else return (Math.PI - theta);
+//    }
+        public double getTheta(Point2D p1, Point2D p2) {
+            Line2D line1 = new Line2D.Double(p1, p2);
+            Line2D line2 = new Line2D.Double(p1, new Point2D.Double(p1.getX()+1, p1.getY()));
+            double angle1 = Math.atan2(line1.getY1() - line1.getY2(),
+                                       line1.getX1() - line1.getX2());
+            double angle2 = Math.atan2(line2.getY1() - line2.getY2(),
+                                       line2.getX1() - line2.getX2());
+            return angle1-angle2;
+        }
+    
     // Mouse handler
     // This does most of the work: capturing mouse movement, and determining if we intersect a shape
     // Fruit is responsible for determining if it's been sliced and drawing itself, but we still
@@ -82,39 +94,30 @@ public class View extends JPanel implements ModelListener {
         }
 
         @Override
-        public void mouseDragged(MouseEvent e) {
-            super.mouseDragged(e);
-            drag.drag(e.getPoint());
-            if(points == null){
-                points = new ArrayList<Point2D>();
-            }
-            points.add(drag.getDrag());
-        }
-
-        @Override
         public void mouseReleased(MouseEvent e) {
             super.mouseReleased(e);
             drag.stop(e.getPoint());
 
             // you could do something like this to draw a line for testing
             // not a perfect implementation, but works for 99% of the angles drawn
-
-            int[] x = { (int) drag.getStart().getX(), (int) drag.getEnd().getX() };//, (int) drag.getEnd().getX(), (int) drag.getStart().getX()};
-            int[] y = { (int) drag.getStart().getY(), (int) drag.getEnd().getY() }; //, (int) drag.getEnd().getY()+1, (int) drag.getStart().getY()+1};
-            model.add(new Fruit(new Area(new Polygon(x, y, x.length))));
             
+            int[] x = { (int) drag.getStart().getX(), (int) drag.getEnd().getX(), (int) drag.getEnd().getX(), (int) drag.getStart().getX()};
+            int[] y = { (int) drag.getStart().getY()-1, (int) drag.getEnd().getY()-1, (int) drag.getEnd().getY()+1, (int) drag.getStart().getY()+1};
+            Polygon pLine = new Polygon(x, y, x.length);
+            model.add(new Fruit(new Area(pLine)));
+
             // find intersected shapes
             int offset = 0; // Used to offset new fruits
             for (Fruit s : model.getShapes()) {
-                if(x != null && y != null )   s.addPoint(x, y);
                 if (s.intersects(drag.getStart(), drag.getEnd())) {
                     s.setFillColor(Color.RED);
                     try {
                         Fruit[] newFruits = s.split(drag.getStart(), drag.getEnd());
-
+                        
                         // add offset so we can see them split - this is used for demo purposes only!
                         // you should change so that new pieces appear close to the same position as the original piece
                         for (Fruit f : newFruits) {
+                            // f.setFillColor(Color.BLACK);
                             f.translate(offset, offset);
                             model.add(f);
                             offset += 20;
@@ -136,17 +139,14 @@ public class View extends JPanel implements ModelListener {
     private class MouseDrag {
         private Point2D start;
         private Point2D end;
-        private Point2D drag;
 
         MouseDrag() { }
 
         protected void start(Point2D start) { this.start = start; }
         protected void stop(Point2D end) { this.end = end; }
-        protected void drag(Point2D drag) { this.drag = drag; }
 
         protected Point2D getStart() { return start; }
         protected Point2D getEnd() { return end; }
-        protected Point2D getDrag() { return drag; }
 
     }
 }

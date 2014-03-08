@@ -45,6 +45,6 @@ public class Model {
   }
 
   public ArrayList<Fruit> getShapes() {
-    return (ArrayList<Fruit>)shapes.clone();
+      return (ArrayList<Fruit>)shapes.clone();
   }
 }

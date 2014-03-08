@@ -5,6 +5,7 @@
  */
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
 /*
  * View to display the Title, and Score
@@ -14,7 +15,10 @@ import java.awt.*;
 public class TitleView extends JPanel implements ModelListener {
   private Model model;
   private JLabel title, score;
+  private JButton startButton;
   private int count = 0;
+  private String start = "START";
+  private String stop = "STOP";
 
   // Constructor requires model reference
   TitleView (Model model) {
@@ -26,13 +30,30 @@ public class TitleView extends JPanel implements ModelListener {
     setBorder(BorderFactory.createLineBorder(Color.black));
     setBackground(Color.YELLOW);
     // You may want a better name for this game!
-    title = new JLabel(" CS349 Assignment 3 Demo Code");
+    title = new JLabel("  Fruit Ninja");
     score = new JLabel();
+
+    // create a button and add a listener for events
+    startButton = new JButton(start);
+    startButton.setSize(10, 20);
+    startButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if(startButton.getText() == start){
+          startButton.setText(stop);
+          
+        }else{
+          startButton.setText(start);
+        }
+      }
+    });
 
     // use border layout so that we can position labels on the left and right
     this.setLayout(new BorderLayout());
     this.add(title, BorderLayout.WEST);
     this.add(score, BorderLayout.EAST);
+
+    this.setLayout(new FlowLayout());
+    this.add(startButton, FlowLayout.CENTER);
   }
 
   // Panel size
