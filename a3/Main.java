@@ -24,7 +24,6 @@ public class Main {
     // customize the title and any other top-level settings
     JFrame frame = new JFrame("FRUIT NINJA");
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    // frame.setSize(500, 500);
     frame.setLayout(new BorderLayout());
     frame.add(title, BorderLayout.NORTH);
     frame.add(view, BorderLayout.CENTER);

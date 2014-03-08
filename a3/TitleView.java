@@ -12,7 +12,7 @@ import java.awt.event.*;
  * Score currently just increments every time we get an update
  * from the model (i.e. a new fruit is added).
  */
-public class TitleView extends JPanel implements ModelListener {
+public class TitleView extends JPanel implements ModelListener, ActionListener {
   private Model model;
   private JLabel title, score;
   private JButton startButton;
@@ -36,16 +36,7 @@ public class TitleView extends JPanel implements ModelListener {
     // create a button and add a listener for events
     startButton = new JButton(start);
     startButton.setSize(10, 20);
-    startButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if(startButton.getText() == start){
-          startButton.setText(stop);
-          
-        }else{
-          startButton.setText(start);
-        }
-      }
-    });
+    startButton.addActionListener(this);
 
     // use border layout so that we can position labels on the left and right
     this.setLayout(new BorderLayout());
@@ -56,10 +47,24 @@ public class TitleView extends JPanel implements ModelListener {
     this.add(startButton, FlowLayout.CENTER);
   }
 
+  @Override
+  public void actionPerformed(ActionEvent e){
+        // System.out.println("HERHERER UPDATE TITLE VIEW");
+
+    if(startButton.getText() == start){
+      startButton.setText(stop);
+      model.setObserve(true);
+    }else{
+      startButton.setText(start);
+      model.setObserve(false);
+
+    }
+  }
+
   // Panel size
   @Override
   public Dimension getPreferredSize() {
-    return new Dimension(500,35);
+    return new Dimension(500,40);
   }
 
   // Update from model
@@ -67,6 +72,7 @@ public class TitleView extends JPanel implements ModelListener {
   // You likely want something more meaningful here.
   @Override
   public void update() {
+    System.out.println("HERHERER UPDATE TITLE VIEW");
     count++;
     paint(getGraphics());
   }

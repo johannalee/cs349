@@ -6,6 +6,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.*;
+import java.awt.event.*;
 import java.awt.geom.Line2D.Double;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -17,6 +18,17 @@ import java.awt.event.MouseEvent;
 public class View extends JPanel implements ModelListener {
     private Model model;
     private final MouseDrag drag;
+    private Timer timer;
+    private int fps = 100;
+    private int windowSize  = getWidth();
+    private double radians_per_second = 0.8;
+    private double radius = 0.5*windowSize;
+    private int x_center = windowSize/2;
+    private int y_center = windowSize/2;
+    private double cur_angle = 0.0;
+
+    //need to quit somehow
+    private Boolean quit = false;
 
     // Constructor
     View (Model m) {
@@ -36,10 +48,25 @@ public class View extends JPanel implements ModelListener {
         f2.translate(200, 200);
         model.add(f2);
 
+        //update timer for animations
+        animateFruits();
+
         // drag represents the last drag performed, which we will need to calculate the angle of the slice
         drag = new MouseDrag();
         // add mouse listener
         addMouseListener(mouseListener);
+    }
+    //animate fruits using timer
+    public void animateFruits() {
+        ActionListener repainter = new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                cur_angle += (radians_per_second/((double)fps));
+            }
+        };
+        timer = new Timer(1000/fps, repainter);
+        if(model.isObservable()){
+            timer.start();
+        }
     }
 
     // Update fired from model
@@ -63,6 +90,16 @@ public class View extends JPanel implements ModelListener {
         // draw all pieces of fruit
         // note that fruit is responsible for figuring out where and how to draw itself
         for (Fruit s : model.getShapes()) {
+            g2.translate(x_center, y_center);
+            g2.rotate(cur_angle);
+            g2.translate(0,radius);
+            g2.rotate(-cur_angle);
+
+            g2.setColor(Color.RED);
+            g2.fill(s.getTransformedShape());
+
+            g2.setColor(Color.BLACK);
+            g2.draw(s.getTransformedShape());
             s.draw(g2);
         }
     }
@@ -96,20 +133,25 @@ public class View extends JPanel implements ModelListener {
         @Override
         public void mouseReleased(MouseEvent e) {
             super.mouseReleased(e);
+            
+            //if not playing then no need to update view
+            if(!model.isObservable()) return;
+            
             drag.stop(e.getPoint());
-
             // you could do something like this to draw a line for testing
             // not a perfect implementation, but works for 99% of the angles drawn
             
             int[] x = { (int) drag.getStart().getX(), (int) drag.getEnd().getX(), (int) drag.getEnd().getX(), (int) drag.getStart().getX()};
             int[] y = { (int) drag.getStart().getY()-1, (int) drag.getEnd().getY()-1, (int) drag.getEnd().getY()+1, (int) drag.getStart().getY()+1};
-            Polygon pLine = new Polygon(x, y, x.length);
-            model.add(new Fruit(new Area(pLine)));
+          
+                Polygon pLine = new Polygon(x, y, x.length);
+                model.add(new Fruit(new Area(pLine)));
+             
 
             // find intersected shapes
             int offset = 0; // Used to offset new fruits
             for (Fruit s : model.getShapes()) {
-                if (s.intersects(drag.getStart(), drag.getEnd())) {
+                if (s.intersects(drag.getStart(), drag.getEnd())){
                     s.setFillColor(Color.RED);
                     try {
                         Fruit[] newFruits = s.split(drag.getStart(), drag.getEnd());

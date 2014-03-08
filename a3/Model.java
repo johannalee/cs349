@@ -5,7 +5,6 @@
  */
 import java.util.ArrayList;
 import java.util.Vector;
-
 /*
  * Class the contains a list of fruit to display.
  * Follows MVC pattern, with methods to add observers,
@@ -17,10 +16,19 @@ public class Model {
 
   // Fruit that we want to display
   private ArrayList<Fruit> shapes = new ArrayList();
+  private Boolean permit2observe = false;
 
   // Constructor
   Model() {
     shapes.clear();
+  }
+
+  public void setObserve(Boolean permit2observe){
+    this.permit2observe = permit2observe;
+  }
+
+  public Boolean isObservable(){
+    return this.permit2observe;
   }
 
   // MVC methods
@@ -31,8 +39,10 @@ public class Model {
   }
 
   public void notifyObservers() {
-    for (ModelListener v : views) {
-      v.update();
+    if(this.isObservable()){
+      for (ModelListener v : views) {
+        v.update();
+      }
     }
   }
 
