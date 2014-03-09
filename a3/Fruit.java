@@ -18,8 +18,11 @@ public class Fruit implements FruitInterface {
     private AffineTransform transform    = new AffineTransform();
     private double          outlineWidth = 5;
 
-    private double fx = 0;
-    private double fy = 0;
+    private Boolean hasGotCut = false;
+    private Boolean aPiece = false;
+    private Boolean blade = false;
+    private double fvx = 0;
+    private double fvy = 0;
 
     /**
      * A fruit is represented using any arbitrary geometric shape.
@@ -29,29 +32,58 @@ public class Fruit implements FruitInterface {
     }
 
     /**
-     * Gets x coordinate of fruits
+     * Set cloned bool if fruit is original
      */
-    public double getFX() {
-        return this.fx;
+    public void setBlade(Boolean blade) {
+        this.blade = blade;
     }
     /**
-     * Gets y coordinate of fruits
+     * Returns true if fruit is a piece cut from it original fruit
      */
-    public double getFY() {
-        return this.fy;
+    public Boolean isBlade() {
+        return this.blade;
     }
     /**
-     * Sets x coordinate of fruits
+     * Set cloned bool if fruit is original
      */
-    public void setFX(double fx) {
-        this.fx = fx;
+    public void setIsPiece(Boolean aPiece) {
+        this.aPiece = aPiece;
     }
     /**
-     * Sets y coordinate of fruits
+     * Returns true if fruit is a piece cut from it original fruit
      */
-    public void setFY(double fy) {
-        this.fy = fy;
+    public Boolean isPiece() {
+        return this.aPiece;
     }
+    /**
+     * Returns true if fruit is a piece cut from it original fruit
+     */
+    public Boolean isCut() {
+        return this.hasGotCut;
+    }
+    /**
+     * Set cloned bool if fruit is original
+     */
+    public void setIsCut(Boolean hasGotCut) {
+        this.hasGotCut = hasGotCut;
+    }
+    public void setFVX(double velocity){
+        this.fvx = velocity;
+    }
+    public void setFVY(double velocity){
+        this.fvy = velocity;
+    }
+
+    public void deccelerate(){
+        this.fvy += 5;
+    }
+
+    public double getFVX(){
+        return this.fvx;
+    }
+    public double getFVY(){
+        return this.fvy;
+    }    
     /**
      * The color used to paint the interior of the Fruit.
      */
@@ -132,10 +164,10 @@ public class Fruit implements FruitInterface {
      * transform and paint settings (fill, outline)
      */
     public void draw(Graphics2D g2) {
+        // if(this.isBlade())  return;
         // TODO BEGIN CS349
         // TODO END CS349
         Graphics2D tg = g2;
-        tg.translate(this.getFX(), this.getFY());
         tg.setPaint(outlineColor);
         tg.draw(this.getTransformedShape());
         tg.setPaint(fillColor);
@@ -188,6 +220,7 @@ public class Fruit implements FruitInterface {
         Area topArea = null;
         Area bottomArea = null;
 
+        //checks if the fruit is not fully cut then don't split it
         if((this.contains(p1) && !this.contains(p2)) || (this.contains(p2) && !this.contains(p1))){
             return new Fruit[0];
         }
@@ -207,13 +240,7 @@ public class Fruit implements FruitInterface {
         // System.out.println(getThetaWrtXaxis(p1,p2));
         Area rotatedFruit = this.getTransformedShape().createTransformedArea(at);
 
-        // double dx = p2.getX() - p1.getX();
-        // double dy = p2.getY() - p1.getY();
-        // double polyLineLength = p1.distance(p2);
         Rectangle rotatedFruitBounds = rotatedFruit.getBounds();
-
-        // Point2D checkPoint1 = new Point2D.Double(rotatedFruitBounds.getX(), rotatedPolyLineBounds.getY());
-        // Point2D checkPoint2 = new Point2D.Double((checkPoint1.getX()+rotatedFruitBounds.getWidth()), checkPoint1.getY());
 
         int bottomRecLeftBottomY = (int)(rotatedFruitBounds.getY() + rotatedFruitBounds.getHeight());
         int bottomRecHeight = bottomRecLeftBottomY - (int)(rotatedPolyLineBounds.getY());
@@ -236,8 +263,10 @@ public class Fruit implements FruitInterface {
 
         // Bisect shape above/below x-axis (look at intersection methods!)
         // TODO END CS349
-        if (topArea != null && bottomArea != null)
+        if (topArea != null && bottomArea != null){
+            this.setIsCut(true);
             return new Fruit[] { new Fruit(topArea.createTransformedArea(at)), new Fruit(bottomArea.createTransformedArea(at)) };
+        }
         return new Fruit[0];
      }
 }

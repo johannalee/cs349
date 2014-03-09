@@ -29,5 +29,15 @@ public class Main {
     frame.add(view, BorderLayout.CENTER);
     frame.pack();
     frame.setVisible(true);
+
+    model.renderFruits();
+    while(true){
+      model.notifyObservers();
+      try{
+        Thread.sleep(100);
+      }catch(Exception e){
+
+      }
+    }
   }
 }

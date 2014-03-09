@@ -30,7 +30,7 @@ public class TitleView extends JPanel implements ModelListener, ActionListener {
     setBorder(BorderFactory.createLineBorder(Color.black));
     setBackground(Color.YELLOW);
     // You may want a better name for this game!
-    title = new JLabel("  Fruit Ninja");
+    title = new JLabel("  EsterEgg Ninja");
     score = new JLabel();
 
     // create a button and add a listener for events
@@ -49,15 +49,12 @@ public class TitleView extends JPanel implements ModelListener, ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent e){
-        // System.out.println("HERHERER UPDATE TITLE VIEW");
-
     if(startButton.getText() == start){
       startButton.setText(stop);
       model.setObserve(true);
     }else{
       startButton.setText(start);
       model.setObserve(false);
-
     }
   }
 
@@ -72,8 +69,7 @@ public class TitleView extends JPanel implements ModelListener, ActionListener {
   // You likely want something more meaningful here.
   @Override
   public void update() {
-    System.out.println("HERHERER UPDATE TITLE VIEW");
-    count++;
+    count = model.returnScore();
     paint(getGraphics());
   }
 
