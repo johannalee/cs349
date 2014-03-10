@@ -33,15 +33,16 @@ public class Main{
 
     ActionListener repainter = new ActionListener(){
       public void actionPerformed(ActionEvent e){
-        if(Math.random() < 0.05){
+        if(Math.random() < 0.05 && model.isObservable()){
           model.renderFruits();
-          // title.updateTimerView();
         }
-        model.notifyObservers();
+        if(!model.isOver()){
+         model.notifyObservers();
+        }
       }
     };
 
-    Timer timer = new Timer(90, repainter);
+    Timer timer = new Timer(100, repainter);
     timer.start();
   }
 }

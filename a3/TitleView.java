@@ -14,10 +14,13 @@ import java.awt.event.*;
  */
 public class TitleView extends JPanel implements ModelListener, ActionListener {
   private Model model;
-  private JLabel title, score, timer;
-  private JButton startButton;
+  private JLabel title, score, timer,  lives;
+  private JButton button;
   private String start = "START";
   private String stop = "STOP";
+  private String restart = "RESTART";
+  private int playerlives = 5, highscore = 0;
+  private static long elasped = 0, remeber=0;
 
   // Constructor requires model reference
   TitleView (Model model) {
@@ -32,30 +35,44 @@ public class TitleView extends JPanel implements ModelListener, ActionListener {
     title = new JLabel("  Fruit Ninja");
     score = new JLabel();
     timer = new JLabel();
+    lives = new JLabel();
 
     // create a button and add a listener for events
-    startButton = new JButton(start);
-    startButton.setSize(10, 20);
-    startButton.addActionListener(this);
+    button = new JButton(start);
+    button.setSize(10, 20);
+    button.addActionListener(this);
 
     // use border layout so that we can position labels on the left and right
     this.setLayout(new BorderLayout());
     this.add(title, BorderLayout.WEST);
     this.add(score, BorderLayout.EAST);
+    this.add(lives, BorderLayout.WEST);
     this.add(timer, BorderLayout.WEST);
 
     this.setLayout(new FlowLayout());
-    this.add(startButton, FlowLayout.CENTER);
+    this.add(button, FlowLayout.CENTER);
+  }
+
+  public void resetView(){
+    title.setText("GAME OVER");
   }
 
   @Override
   public void actionPerformed(ActionEvent e){
-    if(startButton.getText() == start){
-      startButton.setText(stop);
+    if(button.getText() == start){
+      button.setText(stop);
       model.setObserve(true);
-    }else{
-      startButton.setText(start);
+      model.setStartTime();
+
+    }else if(button.getText() == stop){
+      remeber = elasped;
+      button.setText(restart);
       model.setObserve(false);
+
+    }else if(button.getText() == restart){
+      model.setStartTime();
+      button.setText(stop);
+      model.setObserve(true);
     }
   }
 
@@ -70,6 +87,12 @@ public class TitleView extends JPanel implements ModelListener, ActionListener {
   // You likely want something more meaningful here.
   @Override
   public void update() {
+    highscore = model.getSplitFruit();
+    playerlives = model.getPlayerLives();
+    elasped = model.calculateElasped();
+    if(remeber > 0){
+      elasped += remeber;
+    }
     paint(getGraphics());
   }
 
@@ -77,8 +100,16 @@ public class TitleView extends JPanel implements ModelListener, ActionListener {
   @Override
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
-
-    score.setText("Count:\t" + model.returnScore() + "\t");
-    timer.setText("Time:\t" + model.returnScore() + "\t");
+    if(model.isOver()){
+      title.setText("GAME OVER");
+      score.setVisible(false);
+      lives.setVisible(false);
+      timer.setVisible(false);
+      button.setVisible(false);
+    }else{
+      score.setText("High Score:\t" + highscore + "\t");
+      lives.setText("Lives:\t" + playerlives + "\t");
+      timer.setText("Time:\t" +  elasped + "\t");
+    }
   }
 }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 import java.awt.geom.*;
 import java.awt.*;
+import java.lang.*;
 /*
  * Class the contains a list of fruit to display.
  * Follows MVC pattern, with methods to add observers,
@@ -18,15 +19,50 @@ public class Model {
 
   // Fruit that we want to display
   private ArrayList<Fruit> shapes = new ArrayList();
+
+  // Fruit to delete
+  private ArrayList<Fruit> splitFruit = new ArrayList();
+
   private Boolean permit2observe = false;
-  private int score = 0;
-  private int missed = 0;
+  private Boolean gameOver = false;
   private double windowWidth = 0, windowHeight = 0;
+
+  private long startTime = 0;
+  private static long elasped = 0;
 
   // Constructor
   Model() {
     shapes.clear();
   }
+
+  public void resetModel(){
+    shapes.clear();
+    splitFruit.clear();
+    permit2observe = false;
+    startTime = 0;
+    elasped = 0;
+  }
+
+  public Boolean isOver(){
+    return this.gameOver;
+  }
+  public void setIsOver(Boolean gg){
+    this.gameOver = gg;
+  }
+  public void setStartTime(){
+    this.startTime = System.currentTimeMillis();
+  }
+
+  public long calculateElasped(){
+    long diff = 0;
+    if(isObservable() && !isOver()){
+      diff = System.currentTimeMillis() - this.startTime;
+      diff = diff/1000;
+    }
+
+    return diff;
+  }
+
 
   public void setObserve(Boolean permit2observe){
     this.permit2observe = permit2observe;
@@ -36,18 +72,33 @@ public class Model {
     return this.permit2observe;
   }
 
-  public int returnScore(){
-    return score/2;
+  public int getMissedFruits(){
+    int score = getShapes().size();
+    if(score != 0){
+      for(Fruit s : getShapes()){
+        if(!s.isPiece()){
+          score--;
+        }
+      }
+    }
+    return score;
   }
-  public int returnMissed(){
-    return missed;
+
+  public int getSplitFruit(){
+    return splitFruit.size();
   }
-  public void yayScore(){
-    score++;
+
+  public int getPlayerLives(){
+    int lives = 5;
+    lives -= getMissedFruits();
+
+    if(lives == 0){
+      setIsOver(true);
+    }
+
+    return lives;
   }
-  public void missedIt(){
-    missed++;
-  }
+
   public void setWindowSize(double width, double height){
     this.windowWidth = width;
     this.windowHeight = height;
@@ -61,17 +112,24 @@ public class Model {
   }
 
   public void notifyObservers() {
+
     if(this.isObservable()){
       for (ModelListener v : views) {
         v.update();
       }
-      for(Fruit s : this.shapes){
-        s.deccelerate();
-        if(s.isLeftToRight()){
-          s.translate(s.getFVX(), s.getFVY());
-        }else{
-          s.translate(-s.getFVX(), s.getFVY());
+      if(!this.isOver()){
+        for(Fruit s : this.shapes){
+          if(s != null){
+            s.deccelerate();
+            if(s.isLeftToRight()){
+              s.translate(s.getFVX(), s.getFVY());
+            }else{
+              s.translate(-s.getFVX(), s.getFVY());
+            }
+          }
         }
+      }else{
+        resetModel();
       }
     }
   }
@@ -103,12 +161,15 @@ public class Model {
       f = new Fruit(new Area(new Ellipse2D.Double(50, (this.windowHeight+50), 50, 50)));
       f.setFillColor(Color.GREEN);
     }
-    if(Math.random() > 0.5){
+    random = Math.random();
+    if(random > 0.5){
       f.translate((this.windowWidth-150), 0);
       f.setFruitDirection(false);
     }
-    f.setFVX(Math.random()*20);
-    f.setFVY(-(Math.random()*20+45));
+    f.setFVX(random*20);
+    f.setFVY(-(random*20+45));
+    f.setY(f.getFVY());
+    // System.out.println(f.getY());
     f.translate(f.getFVX(), f.getFVY());
     this.add(f);    
   }
@@ -118,6 +179,11 @@ public class Model {
   
   public void add(Fruit s) {
     shapes.add(s);
+    notifyObservers();
+  }
+
+  public void addSplitFruit(Fruit s) {
+    splitFruit.add(s);
     notifyObservers();
   }
 

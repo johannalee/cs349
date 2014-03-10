@@ -15,14 +15,9 @@ import java.awt.event.MouseEvent;
  * View of the main play area.
  * Displays pieces of fruit, and allows players to slice them.
  */
-public class View extends JPanel implements ModelListener {
+public class View extends JPanel implements ModelListener{
     private Model model;
     private final MouseDrag drag;
-    private Timer timer;
-    private int fps = 100;
-
-    //need to quit somehow
-    private Boolean quit = false;
 
     // Constructor
     View (Model m) {
@@ -30,7 +25,6 @@ public class View extends JPanel implements ModelListener {
         model.addObserver(this);
         model.setWindowSize(500, 400);
         setBackground(Color.WHITE);
-
         // add a couple of fruit instances for test purposes
         // in a real game, you want to spawn fruit in random locations from the bottom of the screen
         // we use ellipse2D for simple shapes, you might consider something more complex
@@ -61,19 +55,12 @@ public class View extends JPanel implements ModelListener {
         Graphics2D g2 = (Graphics2D) g;
         // draw all pieces of fruit
         // note that fruit is responsible for figuring out where and how to draw itself
-        for (Fruit s : model.getShapes()) {
-
-            if(s.isCut()){
-                // already cut fruit shouldn't be existing here but just checking in case
-                model.remove(s);
-
-            }else if(s.isPiece()){    //pieces so they need to fall off instead of moving along the arc
-
-            }else{  //fruits that haven't been split so they need to move along the arc
-                
+        if(model.isOver()){
+            g2.clearRect(0, 0, 500, 400);
+        }else{
+            for (Fruit s : model.getShapes()) {
+                s.draw(g2);
             }
-
-            s.draw(g2);
         }
     }
 
@@ -115,7 +102,7 @@ public class View extends JPanel implements ModelListener {
             for (Fruit s : model.getShapes()) {
                 if (s.intersects(drag.getStart(), drag.getEnd())){
 
-                    s.setFillColor(Color.RED);
+                    // s.setFillColor(Color.RED);
                     Fruit copy = new Fruit(s.getTransformedShape());
                     try {
                         Fruit[] newFruits = copy.split(drag.getStart(), drag.getEnd());
@@ -123,6 +110,7 @@ public class View extends JPanel implements ModelListener {
                         // if s has got spilt up then remove it from the arraylist
                         if(newFruits.length > 0){
                             model.remove(s);
+                            model.addSplitFruit(s);
                         }
 
                         // add offset so we can see them split - this is used for demo purposes only!
@@ -134,13 +122,9 @@ public class View extends JPanel implements ModelListener {
                     } catch (Exception ex) {
                         System.err.println("Caught error: " + ex.getMessage());
                     }
-                } else {
-                    s.setFillColor(Color.BLUE);
-
-                    //how could you miss it T^T
-                    model.missedIt();
-                    System.out.println("MISSED: "+model.returnMissed());
                 }
+                //  else {
+                // }
             }
         }
     };
