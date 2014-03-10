@@ -21,15 +21,21 @@ public class Fruit implements FruitInterface {
     // private Boolean hasGotCut = false;
     private Boolean aPiece = false;
     private Boolean leftToRight = true;
+    private Boolean wasAtPeek = false;
     private double fvx = 0;
     private double fvy = 0;
-    private double startY;
+    // private double startY;
 
     /**
      * A fruit is represented using any arbitrary geometric shape.
      */
     Fruit (Area fruitShape) {
         this.fruitShape = (Area)fruitShape.clone();
+    }
+
+    public Boolean hasCompletedAnimation(){
+        //500 is the window height
+        return getTransformedShape().getBounds().getY() > 500;
     }
     /**
      * Set cloned bool if fruit is original
@@ -58,14 +64,14 @@ public class Fruit implements FruitInterface {
     /**
      * Returns true if fruit is cut
      */
-    public void setY(double y) {
-        this.startY = y;
+    public void setWasAtPeek() {
+        this.wasAtPeek = true;
     }
     /**
      * set fruit cut state
      */
-    public double getY() {
-        return this.startY;
+    public Boolean hasBeenToPeek() {
+        return this.wasAtPeek;
     }
     /**
      * Set the x movement

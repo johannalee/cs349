@@ -31,6 +31,9 @@ public class Main{
     frame.pack();
     frame.setVisible(true);
 
+    //not resizable window
+    frame.setResizable(false);
+
     ActionListener repainter = new ActionListener(){
       public void actionPerformed(ActionEvent e){
         if(Math.random() < 0.05 && model.isObservable()){

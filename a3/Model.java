@@ -38,7 +38,7 @@ public class Model {
   public void resetModel(){
     shapes.clear();
     splitFruit.clear();
-    permit2observe = false;
+    permit2observe = true;
     startTime = 0;
     elasped = 0;
   }
@@ -73,11 +73,11 @@ public class Model {
   }
 
   public int getMissedFruits(){
-    int score = getShapes().size();
-    if(score != 0){
+    int score = 0;
+    if(getShapes().size() != 0){
       for(Fruit s : getShapes()){
-        if(!s.isPiece()){
-          score--;
+        if(!s.isPiece() && s.hasCompletedAnimation()){
+          score++;
         }
       }
     }
@@ -90,7 +90,7 @@ public class Model {
 
   public int getPlayerLives(){
     int lives = 5;
-    lives -= getMissedFruits();
+    lives -= (getMissedFruits());
 
     if(lives == 0){
       setIsOver(true);
@@ -168,8 +168,7 @@ public class Model {
     }
     f.setFVX(random*20);
     f.setFVY(-(random*20+45));
-    f.setY(f.getFVY());
-    // System.out.println(f.getY());
+    // f.setY(f.getFVY());
     f.translate(f.getFVX(), f.getFVY());
     this.add(f);    
   }
