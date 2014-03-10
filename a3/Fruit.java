@@ -16,11 +16,11 @@ public class Fruit implements FruitInterface {
     private Color           fillColor    = Color.GREEN;
     private Color           outlineColor = Color.BLACK;
     private AffineTransform transform    = new AffineTransform();
-    private double          outlineWidth = 5;
+    private double          outlineWidth = 5;   //default
 
     private Boolean hasGotCut = false;
     private Boolean aPiece = false;
-    private Boolean blade = false;
+    // private Boolean blade = false;
     private double fvx = 0;
     private double fvy = 0;
 
@@ -31,18 +31,20 @@ public class Fruit implements FruitInterface {
         this.fruitShape = (Area)fruitShape.clone();
     }
 
-    /**
-     * Set cloned bool if fruit is original
-     */
-    public void setBlade(Boolean blade) {
-        this.blade = blade;
-    }
-    /**
-     * Returns true if fruit is a piece cut from it original fruit
-     */
-    public Boolean isBlade() {
-        return this.blade;
-    }
+    // /**
+    //  * Set cloned bool if fruit is original
+    //  */
+    // public void setBlade(Boolean blade) {
+    //     this.blade = blade;
+    // }
+    // /*
+    //  *  Returns true if fruit is a piece cut from it original fruit
+    //  */ 
+     
+    // public Boolean isBlade() {
+    //     return this.blade;
+    // }
+
     /**
      * Set cloned bool if fruit is original
      */
@@ -56,31 +58,44 @@ public class Fruit implements FruitInterface {
         return this.aPiece;
     }
     /**
-     * Returns true if fruit is a piece cut from it original fruit
+     * Returns true if fruit is cut
      */
     public Boolean isCut() {
         return this.hasGotCut;
     }
     /**
-     * Set cloned bool if fruit is original
+     * set fruit cut state
      */
     public void setIsCut(Boolean hasGotCut) {
         this.hasGotCut = hasGotCut;
     }
+    /**
+     * Set the x movement
+     */
     public void setFVX(double velocity){
         this.fvx = velocity;
     }
+    /**
+     * set the y movement
+     */
     public void setFVY(double velocity){
         this.fvy = velocity;
     }
-
+    /**
+     * set velocity for fruit falling
+     */
     public void deccelerate(){
         this.fvy += 5;
     }
-
+    /**
+     * get the x movement
+     */
     public double getFVX(){
         return this.fvx;
     }
+    /**
+     * get the y movement
+     */
     public double getFVY(){
         return this.fvy;
     }    
@@ -168,6 +183,8 @@ public class Fruit implements FruitInterface {
         // TODO BEGIN CS349
         // TODO END CS349
         Graphics2D tg = g2;
+        tg.setStroke(new BasicStroke((float)this.getOutlineWidth()));
+        tg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         tg.setPaint(outlineColor);
         tg.draw(this.getTransformedShape());
         tg.setPaint(fillColor);
@@ -229,7 +246,6 @@ public class Fruit implements FruitInterface {
         // Rotate shape to align slice with x-axis
         int[] x = { (int) p1.getX(), (int) p2.getX(), (int) p2.getX(), (int) p1.getX()};
         int[] y = { (int) p1.getY()-1, (int) p2.getY()-1, (int) p2.getY()+1, (int) p1.getY()+1};
-        Polygon pLine = new Polygon(x, y, x.length);
         
         AffineTransform at = new AffineTransform();
         at.rotate(-getThetaWrtXaxis(p1,p2), p1.getX(), p1.getY());
@@ -237,7 +253,6 @@ public class Fruit implements FruitInterface {
         Area rotatedPolyLine = new Area(new Polygon(x, y, x.length)).createTransformedArea(at);
         Rectangle rotatedPolyLineBounds = rotatedPolyLine.getBounds();
 
-        // System.out.println(getThetaWrtXaxis(p1,p2));
         Area rotatedFruit = this.getTransformedShape().createTransformedArea(at);
 
         Rectangle rotatedFruitBounds = rotatedFruit.getBounds();
@@ -246,26 +261,24 @@ public class Fruit implements FruitInterface {
         int bottomRecHeight = bottomRecLeftBottomY - (int)(rotatedPolyLineBounds.getY());
         int topRecHeight = (int)(rotatedPolyLineBounds.getY() - rotatedFruitBounds.getY()) - 2;
 
-        Rectangle bottomRec = new Rectangle((int)rotatedFruitBounds.getX(), (int)rotatedPolyLineBounds.getY()-3, (int)rotatedFruitBounds.width, bottomRecHeight+3);
-        Rectangle topRec = new Rectangle((int)rotatedFruitBounds.getX(), (int)rotatedFruitBounds.getY(), (int)rotatedFruitBounds.width, topRecHeight);
+        Rectangle bottomRec = new Rectangle((int)rotatedFruitBounds.getX(), (int)rotatedPolyLineBounds.getY(), (int)rotatedFruitBounds.width, bottomRecHeight);
 
         at.rotate(getThetaWrtXaxis(p1,p2), p1.getX(), p1.getY());
-        double dx = this.getTransformedShape().getBounds().getX() - rotatedFruitBounds.getX();
-        double dy = this.getTransformedShape().getBounds().getY() - rotatedFruitBounds.getY();
+        
         bottomArea = rotatedFruit.createTransformedArea(at);
         bottomArea.intersect(new Area(bottomRec));
+        
         topArea = rotatedFruit.createTransformedArea(at);
-        topArea.intersect(new Area(topRec));
-        at.translate(dx/2, dy/2);
-        topArea = topArea.createTransformedArea(at);
-        bottomArea = bottomArea.createTransformedArea(at);
-        at.rotate(getThetaWrtXaxis(p1,p2)/1.667, p1.getX(), p1.getY());
+        topArea.subtract(bottomArea);
+
+        topArea.transform(at.createInverse());
+        bottomArea.transform(at.createInverse());
 
         // Bisect shape above/below x-axis (look at intersection methods!)
         // TODO END CS349
         if (topArea != null && bottomArea != null){
             this.setIsCut(true);
-            return new Fruit[] { new Fruit(topArea.createTransformedArea(at)), new Fruit(bottomArea.createTransformedArea(at)) };
+            return new Fruit[] { new Fruit(topArea.createTransformedArea(at.createInverse())), new Fruit(bottomArea.createTransformedArea(at.createInverse())) };
         }
         return new Fruit[0];
      }

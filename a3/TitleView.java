@@ -14,9 +14,9 @@ import java.awt.event.*;
  */
 public class TitleView extends JPanel implements ModelListener, ActionListener {
   private Model model;
-  private JLabel title, score;
+  private JLabel title, score, timer;
   private JButton startButton;
-  private int count = 0;
+  // private int count = 0;
   private String start = "START";
   private String stop = "STOP";
 
@@ -28,10 +28,11 @@ public class TitleView extends JPanel implements ModelListener, ActionListener {
 
     // draw something
     setBorder(BorderFactory.createLineBorder(Color.black));
-    setBackground(Color.YELLOW);
+    setBackground(Color.PINK);
     // You may want a better name for this game!
-    title = new JLabel("  EsterEgg Ninja");
+    title = new JLabel("  Fruit Ninja");
     score = new JLabel();
+    timer = new JLabel();
 
     // create a button and add a listener for events
     startButton = new JButton(start);
@@ -42,6 +43,7 @@ public class TitleView extends JPanel implements ModelListener, ActionListener {
     this.setLayout(new BorderLayout());
     this.add(title, BorderLayout.WEST);
     this.add(score, BorderLayout.EAST);
+    this.add(timer, BorderLayout.WEST);
 
     this.setLayout(new FlowLayout());
     this.add(startButton, FlowLayout.CENTER);
@@ -69,7 +71,6 @@ public class TitleView extends JPanel implements ModelListener, ActionListener {
   // You likely want something more meaningful here.
   @Override
   public void update() {
-    count = model.returnScore();
     paint(getGraphics());
   }
 
@@ -77,6 +78,8 @@ public class TitleView extends JPanel implements ModelListener, ActionListener {
   @Override
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
-    score.setText("Count: " + count + "  ");
+
+    score.setText("Count:\t" + model.returnScore() + "\t");
+    timer.setText("Time:\t" + model.returnScore() + "\t");
   }
 }

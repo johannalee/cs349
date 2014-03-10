@@ -5,8 +5,9 @@
  */
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
-public class Main {
+public class Main{
   static private Model model;
   static private View view;
   static private TitleView title;
@@ -30,14 +31,17 @@ public class Main {
     frame.pack();
     frame.setVisible(true);
 
-    model.renderFruits();
-    while(true){
-      model.notifyObservers();
-      try{
-        Thread.sleep(100);
-      }catch(Exception e){
-
+    ActionListener repainter = new ActionListener(){
+      public void actionPerformed(ActionEvent e){
+        if(Math.random() < 0.05){
+          model.renderFruits();
+          // title.updateTimerView();
+        }
+        model.notifyObservers();
       }
-    }
+    };
+
+    Timer timer = new Timer(90, repainter);
+    timer.start();
   }
 }
