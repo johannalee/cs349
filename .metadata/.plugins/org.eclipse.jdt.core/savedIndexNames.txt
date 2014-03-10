@@ -1,2 +1,0 @@
-INDEX VERSION 1.121+/Users/Johanna/Documents/uWaterloo/3A/CS349/assignments/.metadata/.plugins/org.eclipse.jdt.core
-1582159555.index
