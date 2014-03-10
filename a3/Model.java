@@ -21,6 +21,7 @@ public class Model {
   private Boolean permit2observe = false;
   private int score = 0;
   private int missed = 0;
+  private double windowWidth = 0, windowHeight = 0;
 
   // Constructor
   Model() {
@@ -47,6 +48,10 @@ public class Model {
   public void missedIt(){
     missed++;
   }
+  public void setWindowSize(double width, double height){
+    this.windowWidth = width;
+    this.windowHeight = height;
+  }
 
   // MVC methods
   // These likely don't need to change, they're just an implementation of the
@@ -60,10 +65,13 @@ public class Model {
       for (ModelListener v : views) {
         v.update();
       }
-
       for(Fruit s : this.shapes){
         s.deccelerate();
-        s.translate(s.getFVX(), s.getFVY());
+        if(s.isLeftToRight()){
+          s.translate(s.getFVX(), s.getFVY());
+        }else{
+          s.translate(-s.getFVX(), s.getFVY());
+        }
       }
     }
   }
@@ -76,42 +84,32 @@ public class Model {
 
     if(random < 0.2){
       //blueberry
-      f = new Fruit(new Area(new Ellipse2D.Double(0, 500, 30, 30)));
-      f.setFVX(Math.random()*20);
-      f.setFVY(-60);
+      f = new Fruit(new Area(new Ellipse2D.Double(50, (this.windowHeight+50), 30, 30)));
       f.setFillColor(Color.BLUE);
-      f.translate(f.getFVX(), f.getFVY());
     }else if(random >= 0.2 && random < 0.4){
       //orange
-      f = new Fruit(new Area(new Ellipse2D.Double(0, 500, 70, 70)));
-      f.setFVX(Math.random()*5);
-      f.setFVY(-65);
+      f = new Fruit(new Area(new Ellipse2D.Double(50, (this.windowHeight+50), 70, 70)));
       f.setFillColor(Color.ORANGE);
-      f.translate(f.getFVX(), f.getFVY());
     }else if(random >= 0.4 && random < 0.6){
       //red delicious apple
-      f = new Fruit(new Area(new Ellipse2D.Double(0, 500, 45, 45)));
-      f.setFVX(Math.random()*17);
-      f.setFVY(-67);
+      f = new Fruit(new Area(new Ellipse2D.Double(50, (this.windowHeight+50), 45, 45)));
       f.setFillColor(Color.RED);
-      f.translate(f.getFVX(), f.getFVY());
     }else if(random >= 0.6 && random < 0.8){
       //banana
-      f = new Fruit(new Area(new Ellipse2D.Double(0, 500, 100, 20)));
-      f.setFVX(Math.random()*13);
-      f.setFVY(-57);
+      f = new Fruit(new Area(new Ellipse2D.Double(50, (this.windowHeight+50), 100, 20)));
       f.setFillColor(Color.YELLOW);
-      f.translate(f.getFVX(), f.getFVY());
     }else if(random >= 0.8 && random < 1){
       //granny smith apple
-      f = new Fruit(new Area(new Ellipse2D.Double(0, 500, 50, 50)));
-      f.setFVX(Math.random()*7);
-      f.setFVY(-50);
+      f = new Fruit(new Area(new Ellipse2D.Double(50, (this.windowHeight+50), 50, 50)));
       f.setFillColor(Color.GREEN);
-      f.translate(f.getFVX(), f.getFVY());
     }
-    f.setOutlineColor(Color.BLACK);
-    f.setOutlineWidth(5);
+    if(Math.random() > 0.5){
+      f.translate((this.windowWidth-150), 0);
+      f.setFruitDirection(false);
+    }
+    f.setFVX(Math.random()*20);
+    f.setFVY(-(Math.random()*20+45));
+    f.translate(f.getFVX(), f.getFVY());
     this.add(f);    
   }
   // Model methods

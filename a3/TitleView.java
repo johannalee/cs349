@@ -16,7 +16,6 @@ public class TitleView extends JPanel implements ModelListener, ActionListener {
   private Model model;
   private JLabel title, score, timer;
   private JButton startButton;
-  // private int count = 0;
   private String start = "START";
   private String stop = "STOP";
 

@@ -20,7 +20,7 @@ public class Fruit implements FruitInterface {
 
     private Boolean hasGotCut = false;
     private Boolean aPiece = false;
-    // private Boolean blade = false;
+    private Boolean leftToRight = true;
     private double fvx = 0;
     private double fvy = 0;
 
@@ -30,21 +30,18 @@ public class Fruit implements FruitInterface {
     Fruit (Area fruitShape) {
         this.fruitShape = (Area)fruitShape.clone();
     }
-
-    // /**
-    //  * Set cloned bool if fruit is original
-    //  */
-    // public void setBlade(Boolean blade) {
-    //     this.blade = blade;
-    // }
-    // /*
-    //  *  Returns true if fruit is a piece cut from it original fruit
-    //  */ 
-     
-    // public Boolean isBlade() {
-    //     return this.blade;
-    // }
-
+    /**
+     * Set cloned bool if fruit is original
+     */
+    public void setFruitDirection(Boolean leftToRight) {
+        this.leftToRight = leftToRight;
+    }
+    /**
+     * Set cloned bool if fruit is original
+     */
+    public Boolean isLeftToRight() {
+        return this.leftToRight;
+    }
     /**
      * Set cloned bool if fruit is original
      */
@@ -238,9 +235,9 @@ public class Fruit implements FruitInterface {
         Area bottomArea = null;
 
         //checks if the fruit is not fully cut then don't split it
-        if((this.contains(p1) && !this.contains(p2)) || (this.contains(p2) && !this.contains(p1))){
+        if((this.contains(p1) && !this.contains(p2)) || (this.contains(p2) && !this.contains(p1)))
             return new Fruit[0];
-        }
+        
 
         // TODO BEGIN CS349
         // Rotate shape to align slice with x-axis
@@ -263,6 +260,12 @@ public class Fruit implements FruitInterface {
 
         Rectangle bottomRec = new Rectangle((int)rotatedFruitBounds.getX(), (int)rotatedPolyLineBounds.getY(), (int)rotatedFruitBounds.width, bottomRecHeight);
 
+        if(bottomRec.getHeight() < rotatedFruitBounds.getHeight()*0.2 || bottomRec.getHeight() >= rotatedFruitBounds.getHeight()*0.8)
+            return new Fruit[0];
+
+        double dx = this.getTransformedShape().getBounds().getX() - rotatedFruitBounds.getX();
+        double dy = this.getTransformedShape().getBounds().getY() - rotatedFruitBounds.getY();
+
         at.rotate(getThetaWrtXaxis(p1,p2), p1.getX(), p1.getY());
         
         bottomArea = rotatedFruit.createTransformedArea(at);
@@ -270,9 +273,10 @@ public class Fruit implements FruitInterface {
         
         topArea = rotatedFruit.createTransformedArea(at);
         topArea.subtract(bottomArea);
-
-        topArea.transform(at.createInverse());
-        bottomArea.transform(at.createInverse());
+        at.translate(dx/2, dy/2);
+        topArea = topArea.createTransformedArea(at);
+        bottomArea = bottomArea.createTransformedArea(at);
+        at.rotate(getThetaWrtXaxis(p1,p2)/1.667, p1.getX(), p1.getY());
 
         // Bisect shape above/below x-axis (look at intersection methods!)
         // TODO END CS349

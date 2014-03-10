@@ -20,12 +20,6 @@ public class View extends JPanel implements ModelListener {
     private final MouseDrag drag;
     private Timer timer;
     private int fps = 100;
-    private int windowSize  = getWidth();
-    private double radians_per_second = 0.8;
-    private double radius = windowSize*0.2;
-    private int x_center = windowSize/2;
-    private int y_center = 0;
-    private double cur_angle = 0.0;
 
     //need to quit somehow
     private Boolean quit = false;
@@ -34,7 +28,7 @@ public class View extends JPanel implements ModelListener {
     View (Model m) {
         model = m;
         model.addObserver(this);
-
+        model.setWindowSize(500, 400);
         setBackground(Color.WHITE);
 
         // add a couple of fruit instances for test purposes
@@ -68,24 +62,18 @@ public class View extends JPanel implements ModelListener {
         // draw all pieces of fruit
         // note that fruit is responsible for figuring out where and how to draw itself
         for (Fruit s : model.getShapes()) {
-            //check if its original fruit that has been split
-            // if(s.isBlade()){//when s is a blade
-            //     s = null;
-            //     model.remove(s);
-            // }else{//when s is a fruit
 
-                if(s.isCut()){
-                    // already cut fruit shouldn't be existing here but just checking in case
-                    model.remove(s);
+            if(s.isCut()){
+                // already cut fruit shouldn't be existing here but just checking in case
+                model.remove(s);
 
-                }else if(s.isPiece()){    //pieces so they need to fall off instead of moving along the arc
+            }else if(s.isPiece()){    //pieces so they need to fall off instead of moving along the arc
 
-                }else{  //fruits that haven't been split so they need to move along the arc
-                    
-                }
+            }else{  //fruits that haven't been split so they need to move along the arc
+                
+            }
 
-                s.draw(g2);
-            // }
+            s.draw(g2);
         }
     }
 
@@ -121,46 +109,38 @@ public class View extends JPanel implements ModelListener {
             int[] y = { (int) drag.getStart().getY()-1, (int) drag.getEnd().getY()-1, (int) drag.getEnd().getY()+1, (int) drag.getStart().getY()+1};
             Polygon pLine = new Polygon(x, y, x.length);
             Fruit line = new Fruit(new Area(pLine));
-            // line.setBlade(true);
-
-            // model.add(new Fruit(new Area(pLine)));
-             
 
             // find intersected shapes
             int offset = 0; // Used to offset new fruits
             for (Fruit s : model.getShapes()) {
-                // if(!s.isBlade()){
-                    if (s.intersects(drag.getStart(), drag.getEnd())){
+                if (s.intersects(drag.getStart(), drag.getEnd())){
 
-                        s.setFillColor(Color.RED);
-                        Fruit copy = new Fruit(s.getTransformedShape());
-                        try {
-                            Fruit[] newFruits = copy.split(drag.getStart(), drag.getEnd());
+                    s.setFillColor(Color.RED);
+                    Fruit copy = new Fruit(s.getTransformedShape());
+                    try {
+                        Fruit[] newFruits = copy.split(drag.getStart(), drag.getEnd());
 
-                            // if s has got spilt up then remove it from the arraylist
-                            if(newFruits.length > 0){
-                                model.remove(s);
-                            }
-
-                            // add offset so we can see them split - this is used for demo purposes only!
-                            // you should change so that new pieces appear close to the same position as the original piece
-                            for (Fruit f : newFruits) {
-                                f.setIsPiece(true);
-                                f.translate(offset, offset);
-                                model.add(f);
-                                offset += 5;
-                            }
-                        } catch (Exception ex) {
-                            System.err.println("Caught error: " + ex.getMessage());
+                        // if s has got spilt up then remove it from the arraylist
+                        if(newFruits.length > 0){
+                            model.remove(s);
                         }
-                    } else {
-                        s.setFillColor(Color.BLUE);
 
-                        //how could you miss it T^T
-                        model.missedIt();
-                        System.out.println("MISSED: "+model.returnMissed());
+                        // add offset so we can see them split - this is used for demo purposes only!
+                        // you should change so that new pieces appear close to the same position as the original piece
+                        for (Fruit f : newFruits) {
+                            f.setIsPiece(true);
+                            model.add(f);
+                        }
+                    } catch (Exception ex) {
+                        System.err.println("Caught error: " + ex.getMessage());
                     }
-                // }
+                } else {
+                    s.setFillColor(Color.BLUE);
+
+                    //how could you miss it T^T
+                    model.missedIt();
+                    System.out.println("MISSED: "+model.returnMissed());
+                }
             }
         }
     };
