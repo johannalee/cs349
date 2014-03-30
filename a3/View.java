@@ -102,12 +102,12 @@ public class View extends JPanel implements ModelListener{
             for (Fruit s : model.getShapes()) {
                 if (s.intersects(drag.getStart(), drag.getEnd())){
 
-                    // s.setFillColor(Color.RED);
                     Fruit copy = new Fruit(s.getTransformedShape());
                     try {
                         Fruit[] newFruits = copy.split(drag.getStart(), drag.getEnd());
-
                         // if s has got spilt up then remove it from the arraylist
+                        Color originalColor = s.getFillColor();
+
                         if(newFruits.length > 0){
                             model.remove(s);
                             model.addSplitFruit(s);
@@ -117,6 +117,7 @@ public class View extends JPanel implements ModelListener{
                         // you should change so that new pieces appear close to the same position as the original piece
                         for (Fruit f : newFruits) {
                             f.setIsPiece(true);
+                            f.setFillColor(originalColor);
                             model.add(f);
                         }
                     } catch (Exception ex) {

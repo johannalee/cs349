@@ -238,7 +238,7 @@ public class Fruit implements FruitInterface {
      * two points given.
      */
     public Fruit[] split(Point2D p1, Point2D p2) throws NoninvertibleTransformException {
-            Area topArea = null;
+        Area topArea = null;
         Area bottomArea = null;
 
         if((this.contains(p1) && !this.contains(p2)) || (this.contains(p2) && !this.contains(p1))){

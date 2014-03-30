@@ -6,6 +6,7 @@
 package com.example.a4;
 import android.graphics.*;
 import android.util.Log;
+import java.lang.Math;
 
 /**
  * Class that represents a Fruit. Can be split into two separate fruits.
@@ -85,6 +86,7 @@ public class Fruit {
     public void draw(Canvas canvas) {
         // TODO BEGIN CS349
         // tell the shape to draw itself using the matrix and paint parameters
+    	canvas.drawPath(getTransformedPath(), this.paint);
         // TODO END CS349
     }
 
@@ -94,10 +96,40 @@ public class Fruit {
      */
     public boolean intersects(PointF p1, PointF p2) {
         // TODO BEGIN CS349
-        // calculate angle between points
+    	Path cutline = new Path();
+    	cutline.moveTo(p1.x, (p1.y-1));
+    	cutline.lineTo(p2.x, (p2.y-1));
+    	cutline.lineTo(p2.x, (p2.y+1));
+    	cutline.lineTo(p1.x, (p1.y+1));
+    	cutline.lineTo(p1.x, (p1.y-1));
+
+        Region cutlineRegion = new Region();
+    	cutlineRegion.setPath(cutline, new Region(0, 0, 500, 800));
+    	
+    	// calculate angle between points
+    	double y_diff = p1.y - p2.y;
+    	double x_diff = p1.x - p2.x;
+    	double angle = Math.atan2(y_diff, x_diff) - Math.atan2(0, -1);
+
         // rotate and flatten points passed in 
+    	
         // rotate path and create region for comparison
+    	Matrix newtransform = new Matrix();
+    	newtransform.postRotate((float) -angle);//, p1.x, p1.y);
+    	
+    	Path newFruitPath = new Path();
+    	this.getTransformedPath().transform(newtransform, newFruitPath);
+    	
+    	Region clonedRegion = new Region();
+    	clonedRegion.setPath(newFruitPath, new Region(0, 0, 500, 800));
+    	boolean valid = clonedRegion.op(cutlineRegion, Region.Op.INTERSECT);
+    	if(valid){
+    		Log.d("INTERSECT", valid+"");
+    		return true;
+    	}
+    	
         // TODO END CS349
+		Log.d("INTERSECT", valid+"");
         return false;
     }
 
@@ -106,7 +138,7 @@ public class Fruit {
      */
     public boolean contains(PointF p1) {
         Region region = new Region();
-        boolean valid = region.setPath(getTransformedPath(), new Region());
+        boolean valid = region.setPath(getTransformedPath(), new Region(0, 0, 500, 800));
         return valid && region.contains((int) p1.x, (int) p1.y);
     }
 
@@ -119,6 +151,12 @@ public class Fruit {
     public Fruit[] split(PointF p1, PointF p2) {
     	Path topPath = null;
     	Path bottomPath = null;
+    	
+    	if((this.contains(p1) && !this.contains(p2)) || (this.contains(p2) && !this.contains(p1))){
+    		Log.d("CONTAIN", "CONTAIN");
+    		return new Fruit[0];
+    	}
+    	Log.d("NOT CONTAIN", "SAD FAIL");
     	// TODO BEGIN CS349
         // calculate angle between points
         // rotate and flatten points passed in

@@ -33,7 +33,7 @@ public class MainView extends View implements Observer {
 
         // TODO BEGIN CS349
         // test fruit, take this out before handing in!
-        Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
+        Fruit f1 = new Fruit(new float[] {0, 20, 40, 60, 60, 0});
         f1.translate(100, 100);
         model.add(f1);
 
@@ -49,12 +49,12 @@ public class MainView extends View implements Observer {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        // Log.d(getResources().getString(R.string.app_name), "Touch down");
+                         Log.d("DOWN", event.getX() + ", " + event.getY());
                         drag.start(event.getX(), event.getY());
                         break;
 
                     case MotionEvent.ACTION_UP:
-                        // Log.d(getResources().getString(R.string.app_name), "Touch release");
+                        Log.d("UP", event.getX() + ", " + event.getY());
                         drag.stop(event.getX(), event.getY());
 
                         // find intersected shapes
@@ -75,7 +75,7 @@ public class MainView extends View implements Observer {
                                     model.add(newFruits[1]);
 
                                     // TODO BEGIN CS349
-                                    // delete original fruit from model
+                                    // delete original fruit from model			model.remove(s);
                                     // TODO END CS349
 
                                 } catch (Exception ex) {
