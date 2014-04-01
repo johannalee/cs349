@@ -5,6 +5,7 @@
  */
 package com.example.a4;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.*;
 import android.util.Log;
@@ -19,6 +20,7 @@ import java.util.Observer;
  * View of the main game area.
  * Displays pieces of fruit, and allows players to slice them.
  */
+@SuppressLint("ViewConstructor")
 public class MainView extends View implements Observer {
     private final Model model;
     private final MouseDrag drag = new MouseDrag();
@@ -33,7 +35,7 @@ public class MainView extends View implements Observer {
 
         // TODO BEGIN CS349
         // test fruit, take this out before handing in!
-        Fruit f1 = new Fruit(new float[] {0, 20, 40, 60, 60, 0});
+        Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
         f1.translate(100, 100);
         model.add(f1);
 
@@ -49,12 +51,13 @@ public class MainView extends View implements Observer {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                         Log.d("DOWN", event.getX() + ", " + event.getY());
+Log.d("DOWN", event.getX() + ", " + event.getY());
                         drag.start(event.getX(), event.getY());
                         break;
 
                     case MotionEvent.ACTION_UP:
-                        Log.d("UP", event.getX() + ", " + event.getY());
+                    	
+Log.d("UP", event.getX() + ", " + event.getY());
                         drag.stop(event.getX(), event.getY());
 
                         // find intersected shapes
@@ -65,7 +68,6 @@ public class MainView extends View implements Observer {
                             	s.setFillColor(Color.RED);
                                 try {
                                     Fruit[] newFruits = s.split(drag.getStart(), drag.getEnd());
-
                                     // TODO BEGIN CS349
                                     // you may want to place the fruit more carefully than this
                                     newFruits[0].translate(0, -10);
@@ -75,7 +77,8 @@ public class MainView extends View implements Observer {
                                     model.add(newFruits[1]);
 
                                     // TODO BEGIN CS349
-                                    // delete original fruit from model			model.remove(s);
+                                    // delete original fruit from model			
+                                    model.remove(s);
                                     // TODO END CS349
 
                                 } catch (Exception ex) {

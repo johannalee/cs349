@@ -13,11 +13,22 @@
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="" key="selection"/>
+		<item value="upperRect" key="selection"/>
 		<list key="findhistory">
+			<item value="upperRect"/>
+			<item value="log"/>
+			<item value="contain"/>
+			<item value="gettrans"/>
+			<item value="color"/>
+			<item value="colo"/>
+			<item value="MATRIX_COL_SCALE_X"/>
 			<item value="fruit ninja"/>
 		</list>
 		<list key="replacehistory">
 		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.GotoLineAction$GotoLineDialog_dialogBounds">
+		<item value="339" key="DIALOG_Y_ORIGIN"/>
+		<item value="484" key="DIALOG_X_ORIGIN"/>
 	</section>
 </section>
