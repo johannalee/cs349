@@ -21,7 +21,6 @@ public class Fruit implements FruitInterface {
     // private Boolean hasGotCut = false;
     private Boolean aPiece = false;
     private Boolean leftToRight = true;
-    private Boolean wasAtPeek = false;
     private double fvx = 0;
     private double fvy = 0;
     // private double startY;
@@ -60,18 +59,6 @@ public class Fruit implements FruitInterface {
      */
     public Boolean isPiece() {
         return this.aPiece;
-    }
-    /**
-     * Returns true if fruit is cut
-     */
-    public void setWasAtPeek() {
-        this.wasAtPeek = true;
-    }
-    /**
-     * set fruit cut state
-     */
-    public Boolean hasBeenToPeek() {
-        return this.wasAtPeek;
     }
     /**
      * Set the x movement

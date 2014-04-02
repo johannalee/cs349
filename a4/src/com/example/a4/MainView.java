@@ -31,18 +31,8 @@ public class MainView extends View implements Observer {
 
         // register this view with the model
         model = m;
+        
         model.addObserver(this);
-
-        // TODO BEGIN CS349
-        // test fruit, take this out before handing in!
-        Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
-        f1.translate(100, 100);
-        model.add(f1);
-
-        Fruit f2 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
-        f2.translate(200, 200);
-        model.add(f2);
-        // TODO END CS349
 
         // add controller
         // capture touch movement, and determine if we intersect a shape
@@ -51,13 +41,10 @@ public class MainView extends View implements Observer {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-Log.d("DOWN", event.getX() + ", " + event.getY());
                         drag.start(event.getX(), event.getY());
                         break;
 
                     case MotionEvent.ACTION_UP:
-                    	
-Log.d("UP", event.getX() + ", " + event.getY());
                         drag.stop(event.getX(), event.getY());
 
                         // find intersected shapes
@@ -71,7 +58,10 @@ Log.d("UP", event.getX() + ", " + event.getY());
                                     // TODO BEGIN CS349
                                     // you may want to place the fruit more carefully than this
                                     newFruits[0].translate(0, -10);
+                                    newFruits[0].setIsPiece(true);
+                                    
                                     newFruits[1].translate(0, +10);
+                                    newFruits[1].setIsPiece(true);
                                     // TODO END CS349
                                     model.add(newFruits[0]);
                                     model.add(newFruits[1]);

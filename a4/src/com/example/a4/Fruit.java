@@ -7,6 +7,7 @@ package com.example.a4;
 import android.annotation.SuppressLint;
 import android.graphics.*;
 import android.util.Log;
+
 import java.lang.Math;
 
 /**
@@ -15,9 +16,14 @@ import java.lang.Math;
 public class Fruit {
     private Path path = new Path();
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    
     private Matrix transform = new Matrix();
     private Region clip = new Region(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
-
+    
+    private boolean leftToRight = true;
+    private boolean aPiece = false;
+    private float fvx = 0;
+    private float fvy = 0;
     /**
      * A fruit is represented as Path, typically populated 
      * by a series of points 
@@ -42,9 +48,52 @@ public class Fruit {
         this.path = path;
     }
 
+    public Boolean hasCompletedAnimation(){
+    	Region r = new Region();
+    	r.setPath(this.getTransformedPath(), clip);
+        return r.getBounds().top >  MainActivity.displaySize.y;
+    }
+
+    public void setIsPiece(Boolean aPiece) {
+        this.aPiece = aPiece;
+    }
+    /**
+     * Returns true if fruit is a piece cut from it original fruit
+     */
+    public Boolean isPiece() {
+        return this.aPiece;
+    }
     private void init() {
         this.paint.setColor(Color.BLUE);
         this.paint.setStrokeWidth(5);
+    }
+
+    public void setFruitDirection(boolean leftToRight) {
+        this.leftToRight = leftToRight;
+    }
+
+    public boolean isLeftToRightit() {
+        return this.leftToRight;
+    }
+    
+    public void setFVX(float velocity) {
+        this.fvx = velocity;
+    }
+
+    public float getFVX() {
+        return this.fvx;
+    }
+
+    public void setFVY(float velocity) {
+        this.fvy = velocity;
+    }
+
+    public float getFVY() {
+        return this.fvy;
+    }
+
+    public void deccelerate() {
+        this.fvx += 5;
     }
 
     /**
@@ -148,32 +197,20 @@ public class Fruit {
     		return new Fruit[0];
     	}
     	
-//    	Path cutline = new Path();
-//    	cutline.moveTo(p1.x, (p1.y));
-//    	cutline.lineTo(p2.x, (p2.y));
-//    	cutline.lineTo(p2.x+1, (p2.y+1));
-//    	cutline.lineTo(p1.x+1, (p1.y+1));
-//    	cutline.lineTo(p1.x, (p1.y));
-//    	cutline.close();
-//
-//        Region cutlineRegion = new Region();
-//    	cutlineRegion.setPath(cutline, this.clip);
-    	
     	// TODO BEGIN CS349
     	// calculate angle between points
-    	Matrix newtransform = new Matrix();
     	float angle = Graphics2D.findAngle(p1, p2);
-    	newtransform.postRotate(-angle, p1.x, p1.y);
     	
         // rotate path and create region for comparison
     	
     	//create a path and initialize with the rotated original fruit 
-    	Path newFruitPath = new Path(this.getTransformedPath());
-    	newFruitPath.transform(newtransform);
-    	
+//    	Path newFruitPath = new Path(this.getTransformedPath());
+//    	newFruitPath.transform(newtransform);
+    	this.rotate(-angle);
+    	Log.d("ANGLE ", angle+"");
     	//make a region for the created path
     	Region newFruitRegion = new Region();
-    	newFruitRegion.setPath(newFruitPath, clip);
+    	newFruitRegion.setPath(this.getTransformedPath(), clip);
     	
     	//crate a rectangle of the new path
     	Rect fruitRect = newFruitRegion.getBounds();
@@ -185,11 +222,6 @@ public class Fruit {
     		y = p2.y;
     	}
     	
-//    	check if pieces are big enough to complete the split
-    	if(fruitHeight*0.2 >= topPieceHeight || fruitHeight*0.8 <= topPieceHeight){
-    		return new Fruit[0];
-    	}
-    	
     	Region topRegion = new Region();
     	topRegion.op(newFruitRegion, new Region(fruitRect.left, fruitRect.top, fruitRect.right, (int)(y)), Region.Op.INTERSECT);
     	
@@ -197,18 +229,17 @@ public class Fruit {
     	Region bottomRegion = new Region();
     	bottomRegion.op(newFruitRegion, topRegion, Region.Op.DIFFERENCE);
     	
-    	topRegion.translate(0, -20);
     	topPath = new Path(topRegion.getBoundaryPath());
-    	
-    	bottomRegion.translate(0, 20);
     	bottomPath = new Path(bottomRegion.getBoundaryPath());
-
-    	newtransform.invert(newtransform);
+    	
+    	this.rotate(angle);
+    	Matrix newtransform = new Matrix();
+    	newtransform.postRotate(angle);
     	topPath.transform(newtransform);
     	bottomPath.transform(newtransform);
         // TODO END CS349
-    	
-        if (topPath != null && bottomPath != null) {
+    	boolean isCuttable = fruitHeight*0.2 < topPieceHeight & fruitHeight*0.8 > topPieceHeight;
+        if (topPath != null && bottomPath != null && isCuttable) {
         	Log.i("Hi","HERE");
            return new Fruit[] { new Fruit(topPath), new Fruit(bottomPath) };
         }

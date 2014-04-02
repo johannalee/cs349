@@ -8,8 +8,10 @@ package com.example.a4;
 import android.app.Activity;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Display;
 import android.view.ViewGroup;
+
 import com.example.a4complete.R;
 
 public class MainActivity extends Activity {
@@ -49,6 +51,20 @@ public class MainActivity extends Activity {
         v2.addView(mainView);
 
         // notify all views
-        model.initObservers();
+        final Handler updateHandler = new Handler();
+        Runnable runnable = new Runnable(){
+        	public void run(){
+        		if(Math.random() < 0.05 && model.isObservable()){
+    	          model.renderFruits();
+        	    }
+        		if(!model.isOver()){
+            		model.initObservers();
+            		updateHandler.postDelayed(this, 200);
+        		}
+        	}
+        };
+        updateHandler.postDelayed(runnable, 300);
+        
+//        model.initObservers();
     }
 }
