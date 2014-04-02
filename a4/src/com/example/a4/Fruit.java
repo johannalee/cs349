@@ -16,7 +16,7 @@ public class Fruit {
     private Path path = new Path();
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Matrix transform = new Matrix();
-    private Region clip = new Region(0, 0, 500, 800);
+    private Region clip = new Region(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
     /**
      * A fruit is represented as Path, typically populated 
@@ -139,56 +139,6 @@ public class Fruit {
      */
 
 	@SuppressLint("NewApi")
-//	public Fruit[] split(PointF p1, PointF p2) {
-//    	Path topPath = null;
-//    	Path bottomPath = null;
-//    	
-//    	// calculate angle between points
-//    	float angle = Graphics2D.findAngle(p1, p2);
-//
-//    	//cutline should go through the fruit completely otherwise no split
-//    	if((this.contains(p1) && !this.contains(p2)) || (this.contains(p2) && !this.contains(p1))){
-//    		return new Fruit[0];
-//    	}
-//    	
-//    	// TODO BEGIN CS349
-//    	
-//    	Matrix newtransform = new Matrix();
-//    	newtransform.postRotate(-angle, p1.x, p1.y);
-//    	
-//        // rotate path and create region for comparison
-//    	Path newFruitPath = new Path();
-//    	newFruitPath.transform(newtransform, this.getTransformedPath());
-//    	
-//    	Region newFruitRegion = new Region();
-//    	newFruitRegion.setPath(newFruitPath, this.clip);
-//    	
-//    	Rect fruitRect = newFruitRegion.getBounds();
-//    	double fruitHeight = fruitRect.top - fruitRect.bottom;
-//    	double topPieceHeight = fruitRect.top - p1.y;
-//    	
-//    	//check if pieces are big enough to complete the split
-//    	if(fruitHeight*02 > topPieceHeight || fruitHeight*0.8 < topPieceHeight){
-//    		return new Fruit[0];
-//    	}
-//    	
-//    	Region topFruitRegion = new Region();
-//    	topFruitRegion.op(newFruitRegion, new Region(fruitRect.left, fruitRect.top, fruitRect.right, (int) p1.y), Region.Op.INTERSECT);
-//    	topPath.op(newFruitPath, topFruitRegion.getBoundaryPath(), Path.Op.INTERSECT);
-//
-//    	bottomPath.op(newFruitPath, topPath, Path.Op.DIFFERENCE);
-//
-////    	newtransform.postRotate(angle, p1.x, p1.y);
-////    	topPath.transform(newtransform);
-////    	bottomPath.transform(newtransform);
-//        // TODO END CS349
-//        if (topPath != null && bottomPath != null) {
-//        	Log.i("Hi","HERE");
-//           return new Fruit[] { new Fruit(topPath), new Fruit(bottomPath) };
-//        }
-//    	Log.i("DIDnt","get there");
-//        return new Fruit[0];
-//    }
     public Fruit[] split(PointF p1, PointF p2) {
     	Path topPath = null;
     	Path bottomPath = null;
@@ -197,6 +147,17 @@ public class Fruit {
     	if((this.contains(p1) && !this.contains(p2)) || (this.contains(p2) && !this.contains(p1))){
     		return new Fruit[0];
     	}
+    	
+//    	Path cutline = new Path();
+//    	cutline.moveTo(p1.x, (p1.y));
+//    	cutline.lineTo(p2.x, (p2.y));
+//    	cutline.lineTo(p2.x+1, (p2.y+1));
+//    	cutline.lineTo(p1.x+1, (p1.y+1));
+//    	cutline.lineTo(p1.x, (p1.y));
+//    	cutline.close();
+//
+//        Region cutlineRegion = new Region();
+//    	cutlineRegion.setPath(cutline, this.clip);
     	
     	// TODO BEGIN CS349
     	// calculate angle between points
@@ -207,8 +168,8 @@ public class Fruit {
         // rotate path and create region for comparison
     	
     	//create a path and initialize with the rotated original fruit 
-    	Path newFruitPath = new Path();
-    	newFruitPath.transform(newtransform, this.getTransformedPath());
+    	Path newFruitPath = new Path(this.getTransformedPath());
+    	newFruitPath.transform(newtransform);
     	
     	//make a region for the created path
     	Region newFruitRegion = new Region();
@@ -216,33 +177,41 @@ public class Fruit {
     	
     	//crate a rectangle of the new path
     	Rect fruitRect = newFruitRegion.getBounds();
-    	double fruitHeight = fruitRect.top - fruitRect.bottom;
-    	double topPieceHeight = fruitRect.top - p1.y;
+    	double fruitHeight = fruitRect.bottom - fruitRect.top;
+    	double topPieceHeight = p1.y - fruitRect.top;
+    	float y = p1.y;
+    	if(topPieceHeight >= fruitHeight){
+    		topPieceHeight = p2.y - fruitRect.top;
+    		y = p2.y;
+    	}
     	
-    	//check if pieces are big enough to complete the split
-    	if(fruitHeight*02 > topPieceHeight || fruitHeight*0.8 < topPieceHeight){
+//    	check if pieces are big enough to complete the split
+    	if(fruitHeight*0.2 >= topPieceHeight || fruitHeight*0.8 <= topPieceHeight){
     		return new Fruit[0];
     	}
     	
-    	newFruitRegion.op(new Region(fruitRect.left, fruitRect.top, fruitRect.right, (int) p1.y), Region.Op.INTERSECT);
-    	topPath = new Path(newFruitRegion.getBoundaryPath());
+    	Region topRegion = new Region();
+    	topRegion.op(newFruitRegion, new Region(fruitRect.left, fruitRect.top, fruitRect.right, (int)(y)), Region.Op.INTERSECT);
     	
-    	newFruitPath.op(newFruitPath, topPath, Path.Op.DIFFERENCE);
-    	bottomPath = new Path(newFruitPath);
+    	
+    	Region bottomRegion = new Region();
+    	bottomRegion.op(newFruitRegion, topRegion, Region.Op.DIFFERENCE);
+    	
+    	topRegion.translate(0, -20);
+    	topPath = new Path(topRegion.getBoundaryPath());
+    	
+    	bottomRegion.translate(0, 20);
+    	bottomPath = new Path(bottomRegion.getBoundaryPath());
 
-    	//invert the transform
-    	newtransform.postRotate(angle, p1.x, p1.y);
-    	newtransform.preConcat(newtransform);
+    	newtransform.invert(newtransform);
     	topPath.transform(newtransform);
     	bottomPath.transform(newtransform);
         // TODO END CS349
-    	int i = 0;
+    	
         if (topPath != null && bottomPath != null) {
         	Log.i("Hi","HERE");
            return new Fruit[] { new Fruit(topPath), new Fruit(bottomPath) };
         }
-        i++;
-        Log.d("i\t", i+"");
     	Log.i("DIDnt","get there");
         return new Fruit[0];
     }
