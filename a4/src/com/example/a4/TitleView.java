@@ -41,10 +41,10 @@ public class TitleView extends TextView implements Observer {
 
         // TODO BEGIN CS349
         // add high score, anything else you want to display in the title
-        // TODO END CS349
         setBackgroundColor(Color.BLUE);
         setTextSize(20);
         setText("\tFruit Ninja \t\tLives:\t" + playerlives + "\t\tScore:\t"+highscore);
+        // TODO END CS349
     }
 
     // Update from model
@@ -53,14 +53,10 @@ public class TitleView extends TextView implements Observer {
     public void update(Observable observable, Object data) {
         // TODO BEGIN CS349
         // do something more meaningful here
+    	
     	highscore = m.getSplitFruit();
         playerlives = m.getPlayerLives();
-
-        if(m.isOver()){
-          highscore = 0;
-          playerlives = 5;
-          m.resetModel();
-        }
+        
         // TODO END CS349
         invalidate();
     }

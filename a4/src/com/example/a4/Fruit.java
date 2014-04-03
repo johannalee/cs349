@@ -49,7 +49,7 @@ public class Fruit {
     public Boolean hasCompletedAnimation(){
     	Region r = new Region();
     	r.setPath(this.getTransformedPath(), clip);
-        return r.getBounds().top > MainActivity.displaySize.y-300;
+        return r.getBounds().top > MainActivity.displaySize.y-400;
     }
 
     public void setIsPiece(Boolean aPiece) {

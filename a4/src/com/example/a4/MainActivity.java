@@ -52,17 +52,14 @@ public class MainActivity extends Activity {
 	 			 String btnStr = ((Button)button).getText().toString();
 
 	 			 if(btnStr.equals(start)){
-	 				 model.setIsOver(false);
 	 				 button.setText(pause);
 	 				 model.setObserve(true);
 	 			 }else if(btnStr.equals(pause)){
 	 				 button.setText(resume);
 	 				 model.setObserve(false);
-	 				 model.setPaused(true);
 	 			 }else if(btnStr.equals(resume)){
 	 				 button.setText(pause);
 	 				 model.setObserve(true);
-	 				 model.setPaused(false);
 	 			 }
 	 		 }
 	 	 });
@@ -86,15 +83,16 @@ public class MainActivity extends Activity {
         final Handler updateHandler = new Handler();
         Runnable runnable = new Runnable(){
         	public void run(){
-        		if(Math.random() < 0.05 && model.isObservable() && !model.getPaused()){
+        		if(Math.random() < 0.05 && model.isObservable()){
     	          model.renderFruits();
         	    }
-        		if(!model.isOver()){
-            		model.initObservers();
-            		updateHandler.postDelayed(this, 100);
-        		}else{
+        		
+        		if(model.isOver()){
         			button.setText(start);
+        			model.setGameOver(false);
         		}
+        		model.initObservers();
+        		updateHandler.postDelayed(this, 100);
         	}
         };
         updateHandler.postDelayed(runnable, 100);

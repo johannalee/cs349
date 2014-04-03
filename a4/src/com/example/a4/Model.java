@@ -27,7 +27,7 @@ public class Model extends Observable {
     final int winH = MainActivity.displaySize.y;
     private boolean permit2observe = false;
     private boolean gameOver = false;
-    private boolean paused = false;
+    private int missedFruits = 0;
     
     // Constructor
     Model() {
@@ -42,17 +42,11 @@ public class Model extends Observable {
         setChanged();
         notifyObservers();
     }
-
+    public void addMissedFruits(){
+    	missedFruits++;
+    }
     public void remove(Fruit s) {
         shapes.remove(s);
-    }
-    
-    public void setPaused(boolean s) {
-        paused = s;
-    }
-    
-    public boolean getPaused() {
-    	return paused;
     }
 
     public ArrayList<Fruit> getShapes() {
@@ -67,15 +61,10 @@ public class Model extends Observable {
 
     // a helper to make it easier to initialize all observers
     public void initObservers() {
-
-    	if(!this.isOver()){
-        	if(this.isObservable()){
-                fruitAnimation();
-                setChanged();
-                notifyObservers();
-        	}
-    	}else{
-    		resetModel();
+    	if(this.isObservable()){
+            fruitAnimation();
+            setChanged();
+            notifyObservers();
     	}
     }
     
@@ -96,14 +85,17 @@ public class Model extends Observable {
       shapes.clear();
       splitFruits.clear();
       permit2observe = false;
+      missedFruits = 0;
+      //setGameOver gets called in MainActivity
     }
 
     public Boolean isOver(){
       return this.gameOver;
     }
     
-    public void setIsOver(Boolean gg){
+    public void setGameOver(Boolean gg){
       this.gameOver = gg;
+      resetModel();
     }
 
     public void setObserve(Boolean permit2observe){
@@ -119,59 +111,46 @@ public class Model extends Observable {
         setChanged();
         notifyObservers();
     }
-    
-    public int getMissedFruits(){
-      int score = 0;
-      if(getShapes().size() != 0){
-        for(Fruit s : getShapes()){
-          if(!s.isPiece() && s.hasCompletedAnimation()){
-            score++;
-          }
-        }
-      }
-      return score;
-    }
 
     public int getSplitFruit(){
       return splitFruits.size();
     }
 
     public int getPlayerLives(){
-      int lives = 5;
-      lives -= (getMissedFruits());
-
-      if(lives <= 0){
-        setIsOver(true);
+      if(missedFruits == 5){
+        this.setGameOver(true);
       }
 
-      return lives;
+      return (5 - missedFruits);
     }
+    
 	public void renderFruits(){
 		Fruit f = null;
 		Path randomFruit = new Path();
 		int c = 0;
+		
 	    //0 to 1
 		double random = Math.random();
 	
 		if(random < 0.2){
 		  //blueberry
-			randomFruit.addCircle(75, this.winH-450, 20, Path.Direction.CW);
+			randomFruit.addCircle(75, this.winH-400, 20, Path.Direction.CW);
 			c = Color.BLUE;
 		}else if(random >= 0.2 && random < 0.4){
 		  //orange
-			randomFruit.addCircle(75, this.winH-450, 40, Path.Direction.CW);
+			randomFruit.addCircle(75, this.winH-400, 40, Path.Direction.CW);
 			c = Color.rgb(255, 165, 0);
 		}else if(random >= 0.4 && random < 0.6){
 		  //red delicious apple
-			randomFruit.addCircle(75, this.winH-450, 30, Path.Direction.CW);
+			randomFruit.addCircle(75, this.winH-400, 30, Path.Direction.CW);
 			c = Color.RED;
 		}else if(random >= 0.6 && random < 0.8){
 		  //banana
-			randomFruit.addOval(new RectF(75, this.winH-450, 225, this.winH-420), Path.Direction.CW);
+			randomFruit.addOval(new RectF(75, this.winH-400, 225, this.winH-370), Path.Direction.CW);
 			c = Color.YELLOW;
 		}else if(random >= 0.8 && random < 1){
 		  //granny smith apple
-			randomFruit.addCircle(75, this.winH-450, 60, Path.Direction.CW);
+			randomFruit.addCircle(75, this.winH-400, 60, Path.Direction.CW);
 			c = Color.rgb(0, 100, 0);
 		}
 		f = new Fruit(randomFruit);

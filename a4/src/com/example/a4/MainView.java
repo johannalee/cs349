@@ -51,8 +51,9 @@ public class MainView extends View implements Observer {
                         Iterator<Fruit> i = model.getShapes().iterator();
                         while(i.hasNext() && model.isObservable()) {
                             Fruit s = i.next();
+
+                            
                             if (s.intersects(drag.getStart(), drag.getEnd())) {
-                            	s.setFillColor(Color.RED);
                                 try {
                                     Fruit[] newFruits = s.split(drag.getStart(), drag.getEnd());
                                     // TODO BEGIN CS349
@@ -77,8 +78,6 @@ public class MainView extends View implements Observer {
                                 } catch (Exception ex) {
                                     Log.e("fruit_ninja", "Error: " + ex.getMessage());
                                 }
-                            } else {
-                                s.setFillColor(Color.BLUE);
                             }
                             invalidate();
                         }
@@ -119,6 +118,11 @@ public class MainView extends View implements Observer {
 
         // draw all pieces of fruit
         for (Fruit s : model.getShapes()) {
+
+            if(!s.isPiece() && s.hasCompletedAnimation()){
+    			model.addMissedFruits();;
+    			model.remove(s);
+            }
             s.draw(canvas);
         }
     }
