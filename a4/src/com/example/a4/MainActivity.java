@@ -58,9 +58,11 @@ public class MainActivity extends Activity {
 	 			 }else if(btnStr.equals(pause)){
 	 				 button.setText(resume);
 	 				 model.setObserve(false);
+	 				 model.setPaused(true);
 	 			 }else if(btnStr.equals(resume)){
 	 				 button.setText(pause);
 	 				 model.setObserve(true);
+	 				 model.setPaused(false);
 	 			 }
 	 		 }
 	 	 });
@@ -84,7 +86,7 @@ public class MainActivity extends Activity {
         final Handler updateHandler = new Handler();
         Runnable runnable = new Runnable(){
         	public void run(){
-        		if(Math.random() < 0.05 && model.isObservable()){
+        		if(Math.random() < 0.05 && model.isObservable() && !model.getPaused()){
     	          model.renderFruits();
         	    }
         		if(!model.isOver()){

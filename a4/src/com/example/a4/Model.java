@@ -25,8 +25,9 @@ public class Model extends Observable {
     private ArrayList<Fruit> splitFruits = new ArrayList<Fruit>();
     final int winW = MainActivity.displaySize.x;
     final int winH = MainActivity.displaySize.y;
-    private Boolean permit2observe = false;
-    private Boolean gameOver = false;
+    private boolean permit2observe = false;
+    private boolean gameOver = false;
+    private boolean paused = false;
     
     // Constructor
     Model() {
@@ -45,6 +46,14 @@ public class Model extends Observable {
     public void remove(Fruit s) {
         shapes.remove(s);
     }
+    
+    public void setPaused(boolean s) {
+        paused = s;
+    }
+    
+    public boolean getPaused() {
+    	return paused;
+    }
 
     public ArrayList<Fruit> getShapes() {
         return (ArrayList<Fruit>) shapes.clone();
@@ -59,12 +68,12 @@ public class Model extends Observable {
     // a helper to make it easier to initialize all observers
     public void initObservers() {
 
-    	if(this.isObservable()){
-            setChanged();
-            notifyObservers();
-    	}
     	if(!this.isOver()){
-            fruitAnimation();
+        	if(this.isObservable()){
+                fruitAnimation();
+                setChanged();
+                notifyObservers();
+        	}
     	}else{
     		resetModel();
     	}
