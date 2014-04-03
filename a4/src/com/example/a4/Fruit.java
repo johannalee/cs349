@@ -8,8 +8,6 @@ import android.annotation.SuppressLint;
 import android.graphics.*;
 import android.util.Log;
 
-import java.lang.Math;
-
 /**
  * Class that represents a Fruit. Can be split into two separate fruits.
  */
@@ -51,7 +49,7 @@ public class Fruit {
     public Boolean hasCompletedAnimation(){
     	Region r = new Region();
     	r.setPath(this.getTransformedPath(), clip);
-        return r.getBounds().top >  MainActivity.displaySize.y;
+        return r.getBounds().top > MainActivity.displaySize.y-300;
     }
 
     public void setIsPiece(Boolean aPiece) {
@@ -93,7 +91,7 @@ public class Fruit {
     }
 
     public void deccelerate() {
-        this.fvx += 5;
+        this.fvy += 3;
     }
 
     /**
@@ -137,6 +135,7 @@ public class Fruit {
     public void draw(Canvas canvas) {
         // TODO BEGIN CS349
         // tell the shape to draw itself using the matrix and paint parameters
+        paint.setAntiAlias(true);
     	canvas.drawPath(getTransformedPath(), this.paint);
         // TODO END CS349
     }

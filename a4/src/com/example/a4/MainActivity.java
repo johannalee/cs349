@@ -9,8 +9,12 @@ import android.app.Activity;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Display;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 import com.example.a4complete.R;
 
@@ -19,6 +23,11 @@ public class MainActivity extends Activity {
     private MainView mainView;
     private TitleView titleView;
     public static Point displaySize;
+
+    private Button button;
+    private String start = "Start";
+    private String pause = "Pause";
+    private String resume = "Resume";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,10 +41,31 @@ public class MainActivity extends Activity {
 
         // initialize model
         model = new Model();
-
+        
         // set view
         setContentView(R.layout.main);
+	   	button = (Button) findViewById(R.id.button1);
+		 	
+	 	button.setOnClickListener(new OnClickListener() {
+	 		 @Override
+	 		 public void onClick(View view) {
+	 			 String btnStr = ((Button)button).getText().toString();
+
+	 			 if(btnStr.equals(start)){
+	 				 model.setIsOver(false);
+	 				 button.setText(pause);
+	 				 model.setObserve(true);
+	 			 }else if(btnStr.equals(pause)){
+	 				 button.setText(resume);
+	 				 model.setObserve(false);
+	 			 }else if(btnStr.equals(resume)){
+	 				 button.setText(pause);
+	 				 model.setObserve(true);
+	 			 }
+	 		 }
+	 	 });
     }
+
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -59,12 +89,12 @@ public class MainActivity extends Activity {
         	    }
         		if(!model.isOver()){
             		model.initObservers();
-            		updateHandler.postDelayed(this, 200);
+            		updateHandler.postDelayed(this, 100);
+        		}else{
+        			button.setText(start);
         		}
         	}
         };
-        updateHandler.postDelayed(runnable, 300);
-        
-//        model.initObservers();
+        updateHandler.postDelayed(runnable, 100);
     }
 }

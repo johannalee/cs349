@@ -58,9 +58,16 @@ public class Model extends Observable {
 
     // a helper to make it easier to initialize all observers
     public void initObservers() {
-        setChanged();
-        notifyObservers();
-        fruitAnimation();
+
+    	if(this.isObservable()){
+            setChanged();
+            notifyObservers();
+    	}
+    	if(!this.isOver()){
+            fruitAnimation();
+    	}else{
+    		resetModel();
+    	}
     }
     
     public void fruitAnimation() {
@@ -79,7 +86,7 @@ public class Model extends Observable {
     public void resetModel(){
       shapes.clear();
       splitFruits.clear();
-      permit2observe = true;
+      permit2observe = false;
     }
 
     public Boolean isOver(){
@@ -94,7 +101,7 @@ public class Model extends Observable {
       this.permit2observe = permit2observe;
     }
 
-    public Boolean isObservable(){
+    public boolean isObservable(){
       return this.permit2observe;
     }
     
@@ -124,7 +131,7 @@ public class Model extends Observable {
       int lives = 5;
       lives -= (getMissedFruits());
 
-      if(lives == 0){
+      if(lives <= 0){
         setIsOver(true);
       }
 
@@ -139,36 +146,36 @@ public class Model extends Observable {
 	
 		if(random < 0.2){
 		  //blueberry
-			randomFruit.addCircle(50, this.winH+30, 50, Path.Direction.CW);
+			randomFruit.addCircle(75, this.winH-450, 20, Path.Direction.CW);
 			c = Color.BLUE;
 		}else if(random >= 0.2 && random < 0.4){
 		  //orange
-			randomFruit.addCircle(100, this.winH+60, 100, Path.Direction.CW);
-			c = Color.MAGENTA;
+			randomFruit.addCircle(75, this.winH-450, 40, Path.Direction.CW);
+			c = Color.rgb(255, 165, 0);
 		}else if(random >= 0.4 && random < 0.6){
 		  //red delicious apple
-			randomFruit.addCircle(100, this.winH+50, 80, Path.Direction.CW);
+			randomFruit.addCircle(75, this.winH-450, 30, Path.Direction.CW);
 			c = Color.RED;
 		}else if(random >= 0.6 && random < 0.8){
 		  //banana
-			randomFruit.addOval(new RectF(50, this.winH+50, 100, this.winH+100), Path.Direction.CW);
-			c = Color.RED;
+			randomFruit.addOval(new RectF(75, this.winH-450, 225, this.winH-420), Path.Direction.CW);
+			c = Color.YELLOW;
 		}else if(random >= 0.8 && random < 1){
 		  //granny smith apple
-			randomFruit.addCircle(50, this.winH+30, 60, Path.Direction.CW);
-			c = Color.GREEN;
+			randomFruit.addCircle(75, this.winH-450, 60, Path.Direction.CW);
+			c = Color.rgb(0, 100, 0);
 		}
 		f = new Fruit(randomFruit);
 		f.setFillColor(c);
 		
 		random = Math.random();
-		if(random > 0.5){
-		  f.translate((this.winW-150), 0);
+		if(random < 0.5){
+		  f.translate(this.winW-235, 0);
 		  f.setFruitDirection(false);
 		}
 		
 		f.setFVX((float)(random*20));
-		f.setFVY(-(float)(random*20+45));
+		f.setFVY(-(float)(random*16+45));
 		f.translate(f.getFVX(), f.getFVY());
 		this.add(f);    
 	}

@@ -49,7 +49,7 @@ public class MainView extends View implements Observer {
 
                         // find intersected shapes
                         Iterator<Fruit> i = model.getShapes().iterator();
-                        while(i.hasNext()) {
+                        while(i.hasNext() && model.isObservable()) {
                             Fruit s = i.next();
                             if (s.intersects(drag.getStart(), drag.getEnd())) {
                             	s.setFillColor(Color.RED);
@@ -57,19 +57,22 @@ public class MainView extends View implements Observer {
                                     Fruit[] newFruits = s.split(drag.getStart(), drag.getEnd());
                                     // TODO BEGIN CS349
                                     // you may want to place the fruit more carefully than this
-                                    newFruits[0].translate(0, -10);
-                                    newFruits[0].setIsPiece(true);
-                                    
-                                    newFruits[1].translate(0, +10);
-                                    newFruits[1].setIsPiece(true);
-                                    // TODO END CS349
-                                    model.add(newFruits[0]);
-                                    model.add(newFruits[1]);
+                                    if(newFruits.length > 0){
+                                        newFruits[0].translate(0, -10);
+                                        newFruits[0].setIsPiece(true);
+                                        
+                                        newFruits[1].translate(0, +10);
+                                        newFruits[1].setIsPiece(true);
+                                        // TODO END CS349
+                                        model.add(newFruits[0]);
+                                        model.add(newFruits[1]);
 
-                                    // TODO BEGIN CS349
-                                    // delete original fruit from model			
-                                    model.remove(s);
-                                    // TODO END CS349
+                                        // TODO BEGIN CS349
+                                        // delete original fruit from model			
+                                        model.remove(s);
+                                        model.addSplitFruit(s);
+                                        // TODO END CS349
+                                    }
 
                                 } catch (Exception ex) {
                                     Log.e("fruit_ninja", "Error: " + ex.getMessage());

@@ -2,27 +2,27 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="263" key="DIALOG_WIDTH"/>
-		<item value="173" key="DIALOG_Y_ORIGIN"/>
+		<item value="66" key="DIALOG_Y_ORIGIN"/>
+		<item value="679" key="DIALOG_X_ORIGIN"/>
 		<item value="399" key="DIALOG_HEIGHT"/>
-		<item value="558" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Lucida Grande|11.0|0|COCOA|1|LucidaGrande" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="isRegEx"/>
 		<item value="false" key="casesensitive"/>
+		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="upperRect" key="selection"/>
+		<item value="addSpli" key="selection"/>
 		<list key="findhistory">
-			<item value="upperRect"/>
-			<item value="log"/>
-			<item value="contain"/>
-			<item value="gettrans"/>
-			<item value="color"/>
-			<item value="colo"/>
-			<item value="MATRIX_COL_SCALE_X"/>
-			<item value="fruit ninja"/>
+			<item value="addMissed"/>
+			<item value="addSpli"/>
+			<item value="add"/>
+			<item value="decce"/>
+			<item value="decell"/>
+			<item value="app_title"/>
+			<item value="main_1"/>
+			<item value="paint"/>
 		</list>
 		<list key="replacehistory">
 		</list>
