@@ -19,7 +19,9 @@ import java.util.Observer;
  * from the model (i.e. a new fruit is added).
  */
 public class TitleView extends TextView implements Observer {
-    private int playerlives = 5, highscore = 0;;
+    private int playerlives = 5, score = 0, highscore = 0;
+    private String playerlivesString = "Lives:\t" + playerlives + "\t\t";
+    private String scoreString = "Score:\t" + score;
     Model m;
     
     // Constructor requires model reference
@@ -41,9 +43,17 @@ public class TitleView extends TextView implements Observer {
 
         // TODO BEGIN CS349
         // add high score, anything else you want to display in the title
+        if(!m.isObservable()){
+        	playerlivesString = "";
+        	scoreString = "\t\tHigh Score:\t" + highscore;
+        }else{
+            playerlivesString = "Lives:\t" + playerlives + "\t\t";
+            scoreString = "Score:\t" + score;
+        }
+        
         setBackgroundColor(Color.BLUE);
         setTextSize(20);
-        setText("\tFruit Ninja \t\tLives:\t" + playerlives + "\t\tScore:\t"+highscore);
+        setText("\tFruit Ninja\t\t" + playerlivesString + scoreString);
         // TODO END CS349
     }
 
@@ -54,9 +64,9 @@ public class TitleView extends TextView implements Observer {
         // TODO BEGIN CS349
         // do something more meaningful here
     	
-    	highscore = m.getSplitFruit();
+    	score = m.getSplitFruit();
         playerlives = m.getPlayerLives();
-        
+    	highscore = score > highscore ? score : highscore;
         // TODO END CS349
         invalidate();
     }

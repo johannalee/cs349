@@ -117,7 +117,7 @@ public class Model extends Observable {
     }
 
     public int getPlayerLives(){
-      if(missedFruits == 5){
+      if(missedFruits >= 5){
         this.setGameOver(true);
       }
 
