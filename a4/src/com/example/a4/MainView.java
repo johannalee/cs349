@@ -56,14 +56,23 @@ public class MainView extends View implements Observer {
                             if (s.intersects(drag.getStart(), drag.getEnd())) {
                                 try {
                                     Fruit[] newFruits = s.split(drag.getStart(), drag.getEnd());
+                                    int originalColor = s.getFillColor();
                                     // TODO BEGIN CS349
                                     // you may want to place the fruit more carefully than this
                                     if(newFruits.length > 0){
-                                        newFruits[0].translate(0, -10);
+                                        newFruits[0].translate(-10, -10);
+                                        //mark it as a peice
                                         newFruits[0].setIsPiece(true);
+                                        //restore color
+                                        newFruits[0].setFillColor(originalColor);
                                         
-                                        newFruits[1].translate(0, +10);
+                                        newFruits[0].increaseCutNum(s.getCutNum()+1);
+                                        
+                                        newFruits[1].translate(10, 10);
                                         newFruits[1].setIsPiece(true);
+                                        newFruits[1].setFillColor(originalColor);
+                                        newFruits[1].increaseCutNum(s.getCutNum()+1);
+                                        
                                         // TODO END CS349
                                         model.add(newFruits[0]);
                                         model.add(newFruits[1]);
@@ -71,7 +80,7 @@ public class MainView extends View implements Observer {
                                         // TODO BEGIN CS349
                                         // delete original fruit from model			
                                         model.remove(s);
-                                        model.addSplitFruit(s);
+                                        if(s.getCutNum() < 1)	model.addSplitFruit(s);
                                         // TODO END CS349
                                     }
 

@@ -9,7 +9,6 @@ import android.app.Activity;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,7 +82,7 @@ public class MainActivity extends Activity {
         final Handler updateHandler = new Handler();
         Runnable runnable = new Runnable(){
         	public void run(){
-        		if(Math.random() < 0.05 && model.isObservable()){
+        		if(Math.random() < 0.15 && model.isObservable()){
     	          model.renderFruits();
         	    }
         		

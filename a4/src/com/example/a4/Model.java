@@ -8,7 +8,6 @@ package com.example.a4;
 import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.RectF;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Observable;
