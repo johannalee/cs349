@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <string name="app_name">fruit_ninja</string>
+    <string name="app_name">Fruit Ninja</string>
     <string name="app_title">Fruit Ninja</string>
-    <string name="buttonString">Start</string>
+    <string name="buttonString">START</string>
 </resources>
