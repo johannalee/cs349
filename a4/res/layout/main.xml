@@ -25,6 +25,13 @@
         android:layout_width="fill_parent"
         android:layout_height="408dp"
         android:orientation="horizontal" >
+<!--         
+        <Item
+            android:id="@+id/blueberry"
+            android:src="@drawable/blueberry"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            /> -->
 
     </LinearLayout>
 
